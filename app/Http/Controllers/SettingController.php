@@ -12,7 +12,8 @@ class SettingController extends Controller
      */
     public function index()
     {
-        //
+        $logo = Setting::where('key', 'logo')->first()->value;
+        return view('welcome', compact('logo'));
     }
 
     /**
