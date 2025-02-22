@@ -23,7 +23,11 @@ class SettingSeeder extends Seeder
                 'value' => 'storage/logos/GoClean1.jpg'
             ],
             [
-                'key' => 'enable_time_restrictio',
+                'key' => 'enable_time_restriction',
+                'value' => '1'
+            ],
+            [
+                'key' => 'enable_session_restriction',
                 'value' => '1'
             ],
             [
@@ -49,7 +53,7 @@ class SettingSeeder extends Seeder
             [
                 'key' => 'sore_end',
                 'value' => '17'
-            ],
+            ]
         ];    
 
         foreach ($settings as $setting) {

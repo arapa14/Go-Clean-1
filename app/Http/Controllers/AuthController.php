@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
+use App\Models\Report;
 use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -39,19 +41,39 @@ class AuthController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
+        $locations = Location::all();
+        $today = Carbon::today();
+
+        $reports = Report::orderBy('created_at', 'desc')->paginate(10);
+
+        // Ambil laporan user hari ini
+        $reportToday = Report::where('user_id', $user->id)
+            ->whereDate('created_at', $today)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        // Hitung jumlah upload hari ini
+        $amountReportToday = $reportToday->count();
+
+        // Data yang umum untuk semua role
+        $data = compact('user', 'locations', 'reports', 'reportToday', 'amountReportToday');
+
+        // Pilih dashboard berdasarkan peran pengguna
         switch ($user->role) {
             case 'admin':
-                return view('admin.dashboard');
+                return view('admin.dashboard', $data);
             case 'reviewer':
-                return view('reviewer.dashboard');
+                return view('reviewer.dashboard', $data);
             case 'petugas-kebersihan':
-                return view('petugas-kebersihan.dashboard');
+                return view('petugas-kebersihan.dashboard', $data);
             case 'juru-bengkel':
-                return view('juru-bengkel.dashboard');
+                return view('juru-bengkel.dashboard', $data);
             default:
-                return redirect()->back()->with('error', 'Unauthenticated');
+                return redirect()->back()->with('error', 'Anda tidak memiliki akses.');
         }
     }
+
 
 
     public function getServerTime()
