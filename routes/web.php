@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 // Auth
 Route::get('/', [AuthController::class, 'index'])->name('auth.index');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Role
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth');
@@ -25,4 +25,15 @@ Route::middleware(['auth', 'isPetugas'])->group(function() {
     // Pengaduan
     Route::post('/complain', [ComplaintController::class, 'store'])->name('complain.store');
     Route::get('/complain', [ComplaintController::class, 'complainPage'])->name('complainPage');
+});
+
+Route::middleware(['auth', 'isReviewer'])->group(function() {
+    // Route untuk menampilkan halaman status laporan
+    Route::get('/status', [ReportController::class, 'status'])->name('status');    
+    Route::get('/getStatus', [ReportController::class, 'getStatus'])->name('getStatus');
+    Route::post('/update-status', [ReportController::class, 'updateStatus'])->name('updateStatus');
+    Route::post('/approve-all', [ReportController::class, 'approveAll'])->name('approveAll');
+
+    Route::get('/complaint', [ComplaintController::class, 'complaint'])->name('complaint');
+    Route::get('/getComplaint', [ComplaintController::class, 'getComplaint'])->name('getComplaint');
 });

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Geometry\Factories\RectangleFactory;
 use Intervention\Image\ImageManager;
+use Yajra\DataTables\Facades\DataTables;
 
 class ComplaintController extends Controller
 {
@@ -235,6 +236,34 @@ class ComplaintController extends Controller
         }
 
         // Tampilkan view complain yang berisi form dan DataTable riwayat
-        return view('petugas-kebersihan.complain', compact('user'));
+        return view('petugas.complain', compact('user'));
+    }
+
+
+    // reviewer and admin
+    public function complaint() {
+        return view('reviewer.complaint');
+    }
+
+    public function getComplaint(Request $request)
+    {
+        // Ambil semua data report, urutkan berdasarkan tanggal terbaru
+        $reports = Complaint::orderBy('created_at', 'desc');
+
+        return DataTables::of($reports)
+            ->editColumn('created_at', function ($row) {
+                return Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
+            })
+            ->addColumn('action', function ($row) {
+                $viewIcon = '<a href="' . asset('storage/' . $row->image) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
+                            <i class="fa-solid fa-eye"></i>
+                         </a>';
+                $downloadIcon = '<a href="' . asset('storage/' . $row->image) . '" download class="action-icon btn-download" title="Download Gambar">
+                                <i class="fa-solid fa-download"></i>
+                             </a>';
+                return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
+            })
+            ->rawColumns(['status', 'action'])
+            ->make(true);
     }
 }

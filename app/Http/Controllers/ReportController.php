@@ -274,11 +274,10 @@ class ReportController extends Controller
         }
     }
 
-    // Menampilkan halaman index report
     public function riwayat()
     {
         $user = Auth::user();
-        return view('petugas-kebersihan.riwayat', compact('user'));
+        return view('petugas.riwayat', compact('user'));
     }
 
     // Menghandle AJAX request dari DataTables
@@ -311,5 +310,86 @@ class ReportController extends Controller
             })
             ->rawColumns(['status', 'action'])
             ->make(true);
+    }
+
+    // reviewer and admin
+
+    public function status()
+    {
+        // Tampilkan halaman status laporan di view petugas.status
+        return view('reviewer.status');
+    }
+
+    public function getStatus(Request $request)
+    {
+        // Ambil semua data report, urutkan berdasarkan tanggal terbaru
+        $reports = Report::orderBy('created_at', 'desc');
+
+        return DataTables::of($reports)
+            // Kolom status diubah menjadi dropdown
+            ->editColumn('status', function ($row) {
+                $statuses = [
+                    'pending'  => 'pending',
+                    'approved' => 'approved',
+                    'rejected' => 'rejected'
+                ];
+                $dropdown = '<select class="status-dropdown border p-1 rounded" data-id="' . $row->id . '">';
+                foreach ($statuses as $value => $label) {
+                    $selected = $row->status === $value ? 'selected' : '';
+                    $style = '';
+                    if ($value === 'pending') {
+                        $style = 'color: #FBBF24;';
+                    } elseif ($value === 'approved') {
+                        $style = 'color: #4ADE80;';
+                    } elseif ($value === 'rejected') {
+                        $style = 'color: #F87171;';
+                    }
+                    $dropdown .= "<option value='{$value}' style='{$style}' {$selected}>{$label}</option>";
+                }
+                $dropdown .= '</select>';
+                return $dropdown;
+            })
+
+
+            ->editColumn('created_at', function ($row) {
+                return Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
+            })
+            ->addColumn('action', function ($row) {
+                $viewIcon = '<a href="' . asset('storage/' . $row->image) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
+                            <i class="fa-solid fa-eye"></i>
+                         </a>';
+                $downloadIcon = '<a href="' . asset('storage/' . $row->image) . '" download class="action-icon btn-download" title="Download Gambar">
+                                <i class="fa-solid fa-download"></i>
+                             </a>';
+                return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
+            })
+            ->rawColumns(['status', 'action'])
+            ->make(true);
+    }
+
+    // Method untuk meng-update status via AJAX
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'id'     => 'required|exists:reports,id',
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+
+        $report = Report::find($request->id);
+        $report->status = $request->status;
+        $report->save();
+
+        return response()->json(['success' => true, 'message' => 'Status berhasil diperbarui.']);
+    }
+
+    public function approveAll(Request $request)
+    {
+        // Update semua laporan yang masih pending menjadi approved
+        $updated = Report::where('status', 'pending')->update(['status' => 'approved']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Semua laporan berhasil di-approve. Total updated: ' . $updated
+        ]);
     }
 }
