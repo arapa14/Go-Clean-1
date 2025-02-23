@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'isAdmin' => App\Http\Middleware\isAdmin::class,
             'isReviewer' => App\Http\Middleware\isReviewer::class,
             'isPetugas' => App\Http\Middleware\isPetugas::class,
+            'isReviewerOrAdmin' => App\Http\Middleware\isReviewerOrAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

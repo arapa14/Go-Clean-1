@@ -93,12 +93,12 @@
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Mobile Header -->
-    <div class="bg-white shadow-md rounded-lg p-4 flex flex-wrap sm:flex-row justify-between items-center mb-6">
+    <div class="bg-white shadow-md rounded-lg p-4 flex flex-wrap sm:flex-row justify-between items-center mb-6 sm:hidden">
         <h1 class="text-xl font-bold text-blue-600">Status Laporan</h1>
         <button id="mobile-menu-button" class="text-blue-600 focus:outline-none">
             <i class="fa-solid fa-bars fa-2x"></i>
         </button>
-    </div>
+    </div>    
 
     <div class="flex flex-1">
         <!-- Sidebar -->
@@ -111,22 +111,60 @@
             </div>
             <!-- Navigation -->
             <nav class="space-y-4">
-                <a href="{{ route('dashboard') }}"
-                    class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
-                    <i class="fa-solid fa-chart-line w-5 mr-3"></i>
-                    <span class="font-semibold">Dashboard</span>
-                </a>
-                <a href="{{ route('status') }}"
-                    class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('status') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
-                    <i class="fa-solid fa-clipboard-list w-5 mr-3"></i>
-                    <span class="font-semibold">Lihat Laporan</span>
-                </a>
-                <a href="{{ route('complaint') }}"
-                    class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('getComplaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
-                    <i class="fa-solid fa-comments w-5 mr-3"></i>
-                    <span class="font-semibold">Lihat Pengaduan</span>
-                </a>
+                @if (Auth::check())
+                    @if (Auth::user()->role == 'reviewer')
+                        <!-- Menu untuk Reviewer: hanya Dashboard, Lihat Laporan, dan Lihat Pengaduan -->
+                        <a href="{{ route('dashboard') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-house w-5 mr-3"></i>
+                            <span class="font-semibold">Dashboard</span>
+                        </a>
+                        <a href="{{ route('status') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('status') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-file-alt w-5 mr-3"></i>
+                            <span class="font-semibold">Lihat Laporan</span>
+                        </a>
+                        <a href="{{ route('complaint') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-comments w-5 mr-3"></i>
+                            <span class="font-semibold">Lihat Pengaduan</span>
+                        </a>
+                    @elseif(Auth::user()->role == 'admin')
+                        <!-- Menu untuk Admin: semua menu -->
+                        <a href="{{ route('dashboard') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-house w-5 mr-3"></i>
+                            <span class="font-semibold">Dashboard</span>
+                        </a>
+                        <a href="{{ route('status') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('status') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-file-alt w-5 mr-3"></i>
+                            <span class="font-semibold">Lihat Laporan</span>
+                        </a>
+                        <a href="{{ route('complaint') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-comments w-5 mr-3"></i>
+                            <span class="font-semibold">Lihat Pengaduan</span>
+                        </a>
+                        <a href="{{ route('user') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('user') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-users w-5 mr-3"></i>
+                            <span class="font-semibold">Manage Users</span>
+                        </a>
+                        <a href="{{ route('location') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('location') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-map-marker-alt w-5 mr-3"></i>
+                            <span class="font-semibold">Manage Locations</span>
+                        </a>
+                        <a href="{{ route('setting') }}"
+                            class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('setting') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                            <i class="fa-solid fa-cog w-5 mr-3"></i>
+                            <span class="font-semibold">Manage Settings</span>
+                        </a>
+                    @endif
+                @endif
             </nav>
+
 
             <!-- Sidebar Footer (Logout) -->
             <div class="border-t border-blue-400 pt-4">
