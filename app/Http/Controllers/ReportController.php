@@ -16,83 +16,102 @@ class ReportController extends Controller
 {
     private function processImage($imageFile, $imageNamePrefix, $directory, $watermarkText, $fontPath, $sizeLimit = 1024)
     {
-        // create image manager with desired driver
-        $manager = new ImageManager(new Driver());
+        // 1. Buat instance image manager dengan driver GD
+        $manager = new ImageManager(new Driver);
 
-        // Buat nama file gambar
+        // 2. Tentukan nama file & path penyimpanan
         $imageName = time() . "_{$imageNamePrefix}." . $imageFile->getClientOriginalExtension();
-
-        // Tentukan path lengkap untuk menyimpan gambar (di folder storage/app/public/{$directory})
         $imagePath = storage_path("app/public/{$directory}/{$imageName}");
 
-        // Buat instance gambar menggunakan Intervention Image
+        // 3. Baca gambar dengan Intervention Image
         $image = $manager->read($imageFile->getRealPath());
+        $imgWidth  = $image->width();
+        $imgHeight = $image->height();
 
-        // --- Konfigurasi Watermark ---
-        $padding = 30;
-        $fontSize = 40;
+        // 4. Definisikan batas watermark agar tidak menutupi foto
+        //    - Maksimal 40% dari lebar gambar
+        //    - Maksimal 20% dari tinggi gambar
+        // Silakan sesuaikan persentase ini sesuai kebutuhan desain.
+        $maxWatermarkWidth  = 0.4 * $imgWidth;
+        $maxWatermarkHeight = 0.2 * $imgHeight;
 
-        // Pisahkan teks watermark ke baris-baris
+        // 5. Margin luar (dari tepi gambar) dan padding dalam (di dalam rectangle)
+        $margin  = 10;
+        $padding = 10;
+
+        // 6. Siapkan teks multi-baris
         $lines = explode("\n", $watermarkText);
-        $lineCount = count($lines);
-        $lineHeight = $fontSize + 5;
-        $textBoxHeight = $lineCount * $lineHeight;
 
-        // Hitung lebar teks terpanjang menggunakan fungsi imagettfbbox
-        $maxTextWidth = 0;
-        foreach ($lines as $line) {
-            $box = imagettfbbox($fontSize, 0, $fontPath, $line);
-            $textWidth = abs($box[2] - $box[0]);
-            if ($textWidth > $maxTextWidth) {
-                $maxTextWidth = $textWidth;
+        /**
+         * 7. Cari ukuran font terbesar yang masih muat dalam batas
+         *    Menggunakan pendekatan binary search agar lebih efisien.
+         *    - Batas bawah (minFontSize) = 10
+         *    - Batas atas (maxFontSize)  = 150 (silakan sesuaikan)
+         */
+        $minFontSize = 10;
+        $maxFontSize = 150;
+        $bestFontSize = $minFontSize; // nilai awal
+
+        while ($minFontSize <= $maxFontSize) {
+            $mid = (int) floor(($minFontSize + $maxFontSize) / 2);
+
+            // Ukur bounding box teks dengan font size = $mid
+            $textBox = $this->measureTextBox($lines, $fontPath, $mid);
+
+            // Tambahkan padding untuk rectangle
+            $watermarkW = $textBox['width']  + $padding * 2;
+            $watermarkH = $textBox['height'] + $padding * 2;
+
+            // Cek apakah muat dalam batas
+            if ($watermarkW <= $maxWatermarkWidth && $watermarkH <= $maxWatermarkHeight) {
+                // Masih muat -> perbesar font
+                $bestFontSize = $mid;
+                $minFontSize = $mid + 1;
+            } else {
+                // Terlalu besar -> perkecil font
+                $maxFontSize = $mid - 1;
             }
         }
-        $textBoxWidth = $maxTextWidth;
 
-        // Tentukan ukuran background watermark
-        $backgroundWidth = $textBoxWidth - 10;
-        $backgroundHeight = $textBoxHeight + $padding * 2;
+        // 8. Hitung ulang ukuran background watermark dengan bestFontSize
+        $textBox   = $this->measureTextBox($lines, $fontPath, $bestFontSize);
+        $watermarkW = $textBox['width']  + $padding * 2;
+        $watermarkH = $textBox['height'] + $padding * 2;
 
-        // Tentukan margin dari tepi gambar
-        $margin = 10;
+        // 9. Tentukan posisi rectangle di pojok kanan-bawah
+        $backgroundX = $imgWidth  - $watermarkW - $margin;
+        $backgroundY = $imgHeight - $watermarkH - $margin;
 
-        // Hitung koordinat background (pojok kiri atas)
-        $backgroundX = $image->width() - $backgroundWidth - $margin;
-        $backgroundY = $image->height() - $backgroundHeight - $margin;
-
-        // Tambahkan background semi-transparan di pojok kanan bawah
-        $image->drawRectangle($backgroundX, $backgroundY, function (RectangleFactory $rectangle) use ($backgroundWidth, $backgroundHeight) {
-            $rectangle->size($backgroundWidth, $backgroundHeight);
-            $rectangle->background('rgba(0, 0, 0, 0.5)');
+        // 10. Gambar rectangle background watermark (Intervention Image v3.x)
+        $image->drawRectangle($backgroundX, $backgroundY, function (RectangleFactory $rectangle) use ($watermarkW, $watermarkH) {
+            $rectangle->size($watermarkW, $watermarkH);
+            $rectangle->background('rgba(0, 0, 0, 0.5)'); // set semi-transparan
             $rectangle->border('white', 2);
         });
 
-        // Tentukan posisi teks: ditempatkan dengan align kanan dan bawah di dalam background
-        $textX = $backgroundX + $backgroundWidth - $padding;
-        $textY = $backgroundY + $backgroundHeight - $padding;
+        // 11. Letakkan teks di pojok kanan-bawah rectangle
+        $textX = $backgroundX + $watermarkW  - $padding;
+        $textY = $backgroundY + $watermarkH - $padding;
 
-        // Tambahkan teks watermark
-        $image->text($watermarkText, $textX, $textY, function ($font) use ($fontPath, $fontSize) {
+        $image->text($watermarkText, $textX, $textY, function ($font) use ($fontPath, $bestFontSize) {
             $font->file($fontPath);
-            $font->size($fontSize);
+            $font->size($bestFontSize);
             $font->color('rgba(255, 255, 255, 0.9)');
             $font->align('right');
             $font->valign('bottom');
         });
 
-
-        // Pastikan direktori penyimpanan gambar sudah ada
+        // 12. Pastikan direktori penyimpanan gambar ada
         if (!file_exists(storage_path("app/public/{$directory}"))) {
             mkdir(storage_path("app/public/{$directory}"), 0755, true);
         }
 
-        // Simpan gambar dengan kualitas awal 80%
+        // 13. Simpan gambar dengan kualitas awal 80%
         $quality = 80;
         $image->save($imagePath, $quality);
 
-        // Lakukan kompresi tambahan jika ukuran file melebihi batas ($sizeLimit dalam KB)
+        // 14. Kompres gambar jika ukuran melebihi sizeLimit (dalam KB)
         while (filesize($imagePath) > $sizeLimit * 1024) {
-            // Jika kualitas sudah terlalu rendah, hentikan loop
             if ($quality <= 10) {
                 break;
             }
@@ -100,10 +119,42 @@ class ReportController extends Controller
             $image->save($imagePath, $quality);
         }
 
-        // Kembalikan path gambar yang bisa diakses secara publik
-        // (pastikan Anda telah menjalankan "php artisan storage:link" untuk membuat symbolic link ke folder storage)
+        // 15. Kembalikan path publik
         return "/{$directory}/{$imageName}";
     }
+
+    /**
+     * Helper untuk mengukur total width & height dari teks multi-baris
+     * dengan font size tertentu. Memperhitungkan line spacing agar teks
+     * tidak terlalu rapat antarbaris.
+     */
+    private function measureTextBox(array $lines, string $fontPath, int $fontSize): array
+    {
+        $maxWidth = 0;
+        $totalHeight = 0;
+        $lineSpacing = 1.2; // spasi antar baris, bisa disesuaikan
+
+        foreach ($lines as $index => $line) {
+            // bounding box baris
+            $box = imagettfbbox($fontSize, 0, $fontPath, $line);
+            $width  = abs($box[2] - $box[0]);
+            $height = abs($box[1] - $box[5]); // tinggi bounding box baris
+
+            if ($width > $maxWidth) {
+                $maxWidth = $width;
+            }
+            // Tambahkan tinggi
+            $totalHeight += ($index === 0)
+                ? $height
+                : $height * $lineSpacing;
+        }
+
+        return [
+            'width'  => $maxWidth,
+            'height' => $totalHeight,
+        ];
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -234,7 +285,7 @@ class ReportController extends Controller
     public function getReports(Request $request)
     {
         $userId = Auth::id(); // Hanya report milik user yang sedang login
-        $reports = Report::where('user_id', $userId);
+        $reports = Report::where('user_id', $userId)->orderBy('created_at', 'desc');
 
         return DataTables::of($reports)
             // Ubah kolom status untuk menampilkan badge dengan warna berbeda
