@@ -167,40 +167,45 @@ class ComplaintController extends Controller
 
         // Validasi input dari form
         $request->validate([
-            'image'      => 'required|file|mimes:jpg,png|max:4096',
-            'complaint' => 'required|string',
+            'image'      => 'required|array',
+            'image.*'    => 'file|mimes:jpg,png|max:4096',
+            'complaint'  => 'required|string',
             'description' => 'required|string|max:255',
-            'location'    => 'required|string|not_in:Pilih lokasi',
+            'location'   => 'required|string|not_in:Pilih lokasi',
         ]);
 
-        // Ambil file gambar yang diupload
-        $imageFile = $request->file('image');
-
-        // Nama prefix untuk gambar, misalnya "report"
+        // Nama prefix untuk gambar
         $imageNamePrefix = 'complain';
 
-        // Direktori penyimpanan gambar (misalnya: storage/app/public/report_images)
+        // Direktori penyimpanan gambar
         $directory = 'image';
 
-        // Watermark: gabungan nama user dan timestamp
+        // Pastikan direktori ada
+        if (!Storage::exists("public/$directory")) {
+            Storage::makeDirectory("public/$directory");
+        }
+
+        // Watermark: nama user + timestamp
         $userName = auth()->check() ? auth()->user()->name : 'Guest';
         $watermarkText = $userName . " - " . now()->format('d/m/Y H:i:s');
 
-        // Path file font (sesuaikan dengan lokasi file font Anda)
+        // Path font (sesuaikan dengan lokasi font di proyek Anda)
         $fontPath = public_path('arial.ttf');
 
-        // Proses gambar dan dapatkan path gambar yang telah diproses
-        $processedImagePath = $this->processImage($imageFile, $imageNamePrefix, $directory, $watermarkText, $fontPath);
+        $imagePaths = [];
+        foreach ($request->file('image') as $imageFile) {
+            $imagePaths[] = $this->processImage($imageFile, $imageNamePrefix, $directory, $watermarkText, $fontPath);
+        }
 
         try {
-            // Menyimpan report ke database
+            // Simpan data complaint ke database
             $complaint = new Complaint();
             $complaint->user_id     = Auth::id();
             $complaint->name        = Auth::user()->name;
             $complaint->description = $request->input('description');
             $complaint->location    = $request->input('location');
-            $complaint->complaint = $request->input('complaint');
-            $complaint->image       = $processedImagePath;
+            $complaint->complaint   = $request->input('complaint');
+            $complaint->image       = json_encode($imagePaths); // Simpan dalam format JSON jika multiple
             $complaint->save();
 
             return redirect()->back()->with('success', 'Berhasil mengirim complaint.');
@@ -241,7 +246,8 @@ class ComplaintController extends Controller
 
 
     // reviewer and admin
-    public function complaint() {
+    public function complaint()
+    {
         return view('reviewer.complaint');
     }
 

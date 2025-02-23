@@ -70,6 +70,37 @@
             /* green-500 */
             color: #ffffff;
         }
+
+        .image-label {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            background-color: #f3f3f3;
+            border: 2px dashed #ccc;
+            text-align: center;
+            line-height: 100px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -115,12 +146,15 @@
             <form action="{{ route('complain.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                {{-- Input Upload Gambar --}}
-                <div class="mb-4">
-                    <label for="image" class="block text-sm font-medium text-gray-700">Upload Gambar</label>
-                    <input type="file" name="image" id="image" capture="environment" required
-                        class="mt-1 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div id="image-container">
+                    <label for="image-1" class="image-label">
+                        <input type="file" name="image[]" id="image-1" accept="image/*" capture="environment"
+                            class="image-input" onchange="previewImage(event, 1)">
+                        <img id="preview-1" class="image-preview hidden">
+                    </label>
                 </div>
+
+                <button type="button" onclick="addImageInput()">+</button>
 
                 {{-- Input Jenis Komplain --}}
                 <div class="mb-4">
@@ -143,8 +177,8 @@
                 {{-- Input Deskripsi --}}
                 <div class="mb-4">
                     <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                    <textarea name="description" id="description" placeholder="Deskripsi komplain Anda"
-                        class="w-full p-2 border rounded-md" required></textarea>
+                    <textarea name="description" id="description" placeholder="Deskripsi komplain Anda" class="w-full p-2 border rounded-md"
+                        required></textarea>
                 </div>
 
                 <div>
@@ -275,6 +309,48 @@
                 setTimeout(() => successMessage.remove(), 500);
             }
         }, 5000);
+
+        let imageCount = 1;
+
+        function addImageInput() {
+            imageCount++;
+            const container = document.getElementById('image-container');
+
+            const label = document.createElement('label');
+            label.setAttribute('for', `image-${imageCount}`);
+            label.classList.add('image-label');
+
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('name', 'image[]');
+            input.setAttribute('id', `image-${imageCount}`);
+            input.setAttribute('accept', 'image/*');
+            input.setAttribute('capture', 'environment');
+            input.classList.add('image-input');
+            input.setAttribute('onchange', `previewImage(event, ${imageCount})`);
+
+            const preview = document.createElement('img');
+            preview.setAttribute('id', `preview-${imageCount}`);
+            preview.classList.add('image-preview', 'hidden');
+
+            label.appendChild(input);
+            label.appendChild(preview);
+            container.appendChild(label);
+        }
+
+        function previewImage(event, index) {
+            const file = event.target.files[0];
+            const preview = document.getElementById(`preview-${index}`);
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 </body>
 

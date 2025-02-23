@@ -230,42 +230,46 @@ class ReportController extends Controller
 
         // Validasi input dari form
         $request->validate([
-            'images'      => 'required|file|mimes:jpg,png|max:4096',
+            'images'      => 'required',
+            'images.*'    => 'file|mimes:jpg,png|max:4096', // validasi untuk setiap file
             'description' => 'required|string|max:255',
             'location'    => 'required|string|not_in:Pilih lokasi',
         ]);
 
-        // Ambil file gambar yang diupload
-        $imageFile = $request->file('images');
+        // Ambil array file gambar
+        $imageFiles = $request->file('images');
 
-        // Nama prefix untuk gambar, misalnya "report"
+        // Konfigurasi lainnya
         $imageNamePrefix = 'report';
-
-        // Direktori penyimpanan gambar (misalnya: storage/app/public/report_images)
         $directory = 'image';
-
-        // Watermark: gabungan nama user dan timestamp
         $userName = auth()->check() ? auth()->user()->name : 'Guest';
         $watermarkText = $userName . " - " . now()->format('d/m/Y H:i:s');
-
-        // Path file font (sesuaikan dengan lokasi file font Anda)
         $fontPath = public_path('arial.ttf');
 
-        // Proses gambar dan dapatkan path gambar yang telah diproses
-        $processedImagePath = $this->processImage($imageFile, $imageNamePrefix, $directory, $watermarkText, $fontPath);
-
         try {
-            // Menyimpan report ke database
-            $report = new Report();
-            $report->user_id     = Auth::id();
-            $report->name        = Auth::user()->name;
-            $report->description = $request->input('description');
-            $report->location    = $request->input('location');
-            $report->date        = now();
-            $report->session        = $session;
-            $report->status      = 'pending';
-            $report->image       = $processedImagePath;
-            $report->save();
+            // Proses tiap file yang diupload
+            foreach ($imageFiles as $imageFile) {
+                // Proses gambar dengan fungsi processImage()
+                $processedImagePath = $this->processImage(
+                    $imageFile,
+                    $imageNamePrefix,
+                    $directory,
+                    $watermarkText,
+                    $fontPath
+                );
+
+                // Simpan report baru untuk tiap gambar
+                $report = new Report();
+                $report->user_id     = Auth::id();
+                $report->name        = Auth::user()->name;
+                $report->description = $request->input('description');
+                $report->location    = $request->input('location');
+                $report->date        = now();
+                $report->session     = $session;
+                $report->status      = 'pending';
+                $report->image       = $processedImagePath;
+                $report->save();
+            }
 
             return redirect()->back()->with('success', 'Berhasil mengirim report.');
         } catch (\Exception $e) {
