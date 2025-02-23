@@ -150,7 +150,7 @@
                 <!-- Input Upload Gambar -->
                 <div id="image-container">
                     <label for="image-1" class="image-label">
-                        <input type="file" name="image[]" id="image-1" accept="image/*" capture="environment"
+                        <input type="file" name="images[]" id="image-1" accept="image/*" capture="environment"
                             class="image-input" onchange="previewImage(event, 1)">
                         <img id="preview-1" class="image-preview hidden">
                     </label>

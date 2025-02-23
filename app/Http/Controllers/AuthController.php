@@ -59,7 +59,7 @@ class AuthController extends Controller
         $totalReports = Report::count();
 
         // Hitung jumlah upload hari ini
-        $amountReportToday = $reportToday->count();
+        $amountReportToday = Report::whereDate('created_at', $today)->count(); 
 
         // Hitung jumlah pengguna berdasarkan role
         $juruBengkelCount = User::where('role', 'juru-bengkel')->count();

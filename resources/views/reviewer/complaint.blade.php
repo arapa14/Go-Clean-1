@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Pengaduan</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Font Awesome CSS -->
@@ -13,6 +12,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         /* Custom transition untuk sidebar */
         #sidebar {
@@ -76,6 +76,14 @@
             /* green-500 */
             color: #ffffff;
         }
+
+        /* Pada layar >= 640px (sm), beri margin-left untuk ruang sidebar */
+        @media (min-width: 640px) {
+            main {
+                margin-left: 16rem;
+                /* 64 in Tailwind */
+            }
+        }
     </style>
 </head>
 
@@ -91,7 +99,8 @@
     <div class="flex flex-1">
         <!-- Sidebar -->
         <aside id="sidebar"
-            class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6 fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
+            class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6
+                   fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
             <!-- Logo/Title -->
             <div class="text-center border-b border-blue-400 pb-4">
                 <h2 class="text-2xl font-bold">Reviewer Dashboard</h2>
@@ -115,7 +124,6 @@
                 </a>
             </nav>
 
-
             <!-- Sidebar Footer (Logout) -->
             <div class="border-t border-blue-400 pt-4">
                 <form action="{{ route('logout') }}" method="POST">
@@ -133,7 +141,8 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-50 hidden z-40 sm:hidden"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-0 sm:ml-64 p-4 sm:p-6">
+        <!-- Tambahkan min-w-0 agar elemen <main> bisa mengecil dalam flex container -->
+        <main class="flex-1 min-w-0 ml-0 sm:ml-64 p-4 sm:p-6 relative z-10">
             <!-- Header Main Content -->
             <div class="bg-white shadow-md rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-blue-600">Pengaduan</h1>
@@ -166,7 +175,7 @@
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Inisialisasi DataTable dengan drawCallback untuk update select color
+            // Inisialisasi DataTable
             var table = $('#reports-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -208,7 +217,7 @@
                 },
                 order: [
                     [3, 'desc']
-                ],
+                ]
             });
         });
 
@@ -253,15 +262,16 @@
                         session = "Sore";
                     }
                     const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-                    const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
-                        "September", "Oktober", "November", "Desember"
+                    const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
+                        "Agustus", "September", "Oktober", "November", "Desember"
                     ];
                     const dayName = days[serverTime.getDay()];
                     const day = serverTime.getDate();
                     const month = months[serverTime.getMonth()];
                     const year = serverTime.getFullYear();
                     document.getElementById('realTimeClock').innerText =
-                        `${session}, ${dayName} ${day} ${month} ${year} - ${hours.toString().padStart(2, '0')}:${formattedMinutes}`;
+                        `${session}, ${dayName} ${day} ${month} ${year} - ` +
+                        `${hours.toString().padStart(2, '0')}:${formattedMinutes}`;
                 })
                 .catch(error => console.error("Gagal mengambil waktu server:", error));
         }

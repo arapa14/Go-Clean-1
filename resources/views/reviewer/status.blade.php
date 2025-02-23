@@ -7,13 +7,23 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Status Laporan</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
+        /* (Opsional) Jika ingin mencegah scroll horizontal global,
+       pastikan tidak mengganggu elemen yang sengaja overflow */
+        html,
+        body {
+            /*overflow-x: hidden;*/
+            /* Pertimbangkan untuk menghapus atau menonaktifkannya */
+        }
+
         /* Custom transition untuk sidebar */
         #sidebar {
             transition: transform 0.3s ease-in-out;
@@ -28,15 +38,12 @@
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
             background-color: #e5e7eb;
-            /* bg-gray-200 */
             color: #374151 !important;
-            /* text-gray-700 */
             margin: 0 0.125rem;
         }
 
         .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
             background-color: #d1d5db;
-            /* bg-gray-300 */
         }
 
         .dataTables_wrapper .dataTables_filter input {
@@ -67,31 +74,37 @@
 
         .btn-view {
             background-color: #3b82f6;
-            /* blue-500 */
             color: #ffffff;
         }
 
         .btn-download {
             background-color: #10b981;
-            /* green-500 */
             color: #ffffff;
+        }
+
+        /* Pastikan main tidak memicu overflow di layar kecil */
+        @media (min-width: 640px) {
+            main {
+                margin-left: 16rem;
+            }
         }
     </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Mobile Header -->
-    <header class="bg-white shadow-md p-4 sm:hidden flex justify-between items-center">
+    <div class="bg-white shadow-md rounded-lg p-4 flex flex-wrap sm:flex-row justify-between items-center mb-6">
         <h1 class="text-xl font-bold text-blue-600">Status Laporan</h1>
         <button id="mobile-menu-button" class="text-blue-600 focus:outline-none">
             <i class="fa-solid fa-bars fa-2x"></i>
         </button>
-    </header>
+    </div>
 
     <div class="flex flex-1">
         <!-- Sidebar -->
         <aside id="sidebar"
-            class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6 fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
+            class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6
+             fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
             <!-- Logo/Title -->
             <div class="text-center border-b border-blue-400 pb-4">
                 <h2 class="text-2xl font-bold">Reviewer Dashboard</h2>
@@ -115,7 +128,6 @@
                 </a>
             </nav>
 
-
             <!-- Sidebar Footer (Logout) -->
             <div class="border-t border-blue-400 pt-4">
                 <form action="{{ route('logout') }}" method="POST">
@@ -133,7 +145,8 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-50 hidden z-40 sm:hidden"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-0 sm:ml-64 p-4 sm:p-6">
+        <!-- Tambahkan min-w-0 agar elemen bisa mengecil sesuai ruang dalam flex container -->
+        <main class="flex-1 min-w-0 ml-0 sm:ml-64 p-4 sm:p-6 relative z-10">
             <!-- Header Main Content -->
             <div class="bg-white shadow-md rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center mb-6">
                 <h1 class="text-2xl font-bold text-blue-600">Status Laporan</h1>
@@ -148,8 +161,9 @@
                         Approve Semua
                     </button>
                 </div>
+                <!-- Tabel DataTables -->
                 <div class="overflow-x-auto">
-                    <table id="reports-table" class="min-w-[600px] divide-y divide-gray-200">
+                    <table id="reports-table" class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
@@ -167,6 +181,7 @@
                 </div>
             </div>
         </main>
+
     </div>
 
     <!-- Scripts: jQuery, DataTables, dll. -->
@@ -185,7 +200,7 @@
         }
 
         $(document).ready(function() {
-            // Inisialisasi DataTable dengan drawCallback untuk update select color
+            // Inisialisasi DataTable
             var table = $('#reports-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -227,14 +242,14 @@
                         searchable: false
                     }
                 ],
-                // responsive: true,
+                autoWidth: false,
+                responsive: true,
                 language: {
                     processing: '<i class="fas fa-spinner fa-spin"></i> Loading...'
                 },
                 order: [
                     [3, 'desc']
                 ],
-                // Setelah DataTable selesai menggambar, update warna pada setiap select
                 drawCallback: function() {
                     $('.status-dropdown').each(function() {
                         updateSelectColor(this);
@@ -242,7 +257,7 @@
                 }
             });
 
-            // Update warna dan kirim AJAX update saat terjadi perubahan pada dropdown
+            // Update warna dan AJAX update saat terjadi perubahan dropdown status
             $(document).on('change', '.status-dropdown', function() {
                 updateSelectColor(this);
                 var selectElem = $(this);

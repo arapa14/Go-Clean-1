@@ -76,49 +76,132 @@
                 <span id="realTimeClock" class="text-gray-600">Memuat Waktu...</span>
             </div>
 
-            <!-- Analitik Cards -->
-            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Card Template -->
-                <div
-                    class="bg-white shadow-xl rounded-lg p-6 border border-gray-200 hover:shadow-2xl transition-shadow">
-                    <h2 class="text-lg font-semibold text-gray-700">Juru Bengkel</h2>
-                    <p class="mt-4 text-4xl font-bold text-blue-600">{{ $juruBengkelCount }}</p>
-                </div>
-                <div
-                    class="bg-white shadow-xl rounded-lg p-6 border border-gray-200 hover:shadow-2xl transition-shadow">
-                    <h2 class="text-lg font-semibold text-gray-700">Petugas Kebersihan</h2>
-                    <p class="mt-4 text-4xl font-bold text-blue-600">{{ $petugasKebersihanCount }}</p>
-                </div>
-                <div
-                    class="bg-white shadow-xl rounded-lg p-6 border border-gray-200 hover:shadow-2xl transition-shadow">
-                    <h2 class="text-lg font-semibold text-gray-700">Jumlah Laporan</h2>
-                    <p class="mt-4 text-4xl font-bold text-blue-600">{{ $totalReports }}</p>
-                </div>
-                <div
-                    class="bg-white shadow-xl rounded-lg p-6 border border-gray-200 hover:shadow-2xl transition-shadow">
-                    <h2 class="text-lg font-semibold text-gray-700">Laporan Hari Ini</h2>
-                    <p class="mt-4 text-4xl font-bold text-blue-600">{{ $amountReportToday }}</p>
-                </div>
-                <div
-                    class="bg-white shadow-xl rounded-lg p-6 border border-gray-200 hover:shadow-2xl transition-shadow">
-                    <h2 class="text-lg font-semibold text-gray-700">Jumlah Komplain</h2>
-                    <p class="mt-4 text-4xl font-bold text-blue-600">{{ $totalComplaints }}</p>
-                </div>
-                <div
-                    class="bg-white shadow-xl rounded-lg p-6 border border-gray-200 hover:shadow-2xl transition-shadow">
-                    <h2 class="text-lg font-semibold text-gray-700">Petugas Lapor Hari Ini</h2>
-                    <p class="mt-4 text-4xl font-bold text-blue-600">{{ $countUsersWithReportToday }}</p>
-                </div>
-                <div
-                    class="bg-white shadow-xl rounded-lg p-6 border border-gray-200 hover:shadow-2xl transition-shadow">
-                    <h2 class="text-lg font-semibold text-gray-700">Petugas Belum Lapor Hari Ini</h2>
-                    <p class="mt-4 text-4xl font-bold text-blue-600">{{ $countUsersWithoutReportToday }}</p>
+            <!-- Container Utama untuk Analitik -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Analytics Cards Grid: 2 kolom di mobile, 3 di tablet, 4 di desktop -->
+                <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Card: Juru Bengkel -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full bg-blue-100 text-blue-600 mr-2">
+                                <i class="fas fa-tools text-lg"></i>
+                            </div>
+                            <h2 class="text-sm font-semibold text-gray-800">Juru Bengkel</h2>
+                        </div>
+                        <p class="mt-2 text-2xl font-bold text-blue-600">{{ $juruBengkelCount }}</p>
+                    </div>
+
+                    <!-- Card: Petugas Kebersihan -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full bg-green-100 text-green-600 mr-2">
+                                <i class="fas fa-broom text-lg"></i>
+                            </div>
+                            <h2 class="text-sm font-semibold text-gray-800">Petugas Kebersihan</h2>
+                        </div>
+                        <p class="mt-2 text-2xl font-bold text-green-600">{{ $petugasKebersihanCount }}</p>
+                    </div>
+
+                    <!-- Card: Jumlah Laporan -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full bg-purple-100 text-purple-600 mr-2">
+                                <i class="fas fa-file-alt text-lg"></i>
+                            </div>
+                            <h2 class="text-sm font-semibold text-gray-800">Jumlah Laporan</h2>
+                        </div>
+                        <p class="mt-2 text-2xl font-bold text-purple-600">{{ $totalReports }}</p>
+                    </div>
+
+                    <!-- Card: Laporan Hari Ini -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full bg-yellow-100 text-yellow-600 mr-2">
+                                <i class="fas fa-calendar-day text-lg"></i>
+                            </div>
+                            <h2 class="text-sm font-semibold text-gray-800">Laporan Hari Ini</h2>
+                        </div>
+                        <p class="mt-2 text-2xl font-bold text-yellow-600">{{ $amountReportToday }}</p>
+                    </div>
+
+                    <!-- Card: Jumlah Komplain -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full bg-red-100 text-red-600 mr-2">
+                                <i class="fas fa-exclamation-triangle text-lg"></i>
+                            </div>
+                            <h2 class="text-sm font-semibold text-gray-800">Jumlah Komplain</h2>
+                        </div>
+                        <p class="mt-2 text-2xl font-bold text-red-600">{{ $totalComplaints }}</p>
+                    </div>
+
+                    <!-- Card: Petugas Lapor Hari Ini -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-2">
+                                <i class="fas fa-user-check text-lg"></i>
+                            </div>
+                            <h2 class="text-sm font-semibold text-gray-800">Petugas Lapor Hari Ini</h2>
+                        </div>
+                        <p class="mt-2 text-2xl font-bold text-indigo-600">{{ $countUsersWithReportToday }}</p>
+                    </div>
+
+                    <!-- Card: Petugas Belum Lapor Hari Ini -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-full bg-gray-100 text-gray-600 mr-2">
+                                <i class="fas fa-user-times text-lg"></i>
+                            </div>
+                            <h2 class="text-sm font-semibold text-gray-800">Belum Lapor Hari Ini</h2>
+                        </div>
+                        <p class="mt-2 text-2xl font-bold text-gray-600">{{ $countUsersWithoutReportToday }}</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Detail Table: User yang Sudah Membuat Laporan Hari Ini -->
+            <section class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mt-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">User yang Sudah Membuat Laporan Hari Ini</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">ID</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Nama</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Email</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach (App\Models\User::whereIn('role', ['juru-bengkel', 'petugas-kebersihan'])->get() as $userItem)
+                                @php
+                                    $hasReport = App\Models\Report::where('user_id', $userItem->id)
+                                        ->whereDate('created_at', \Carbon\Carbon::today())
+                                        ->exists();
+                                @endphp
+                                @if ($hasReport)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="py-3 px-4 text-sm text-gray-700">{{ $userItem->id }}</td>
+                                        <td class="py-3 px-4 text-sm text-gray-700">{{ $userItem->name }}</td>
+                                        <td class="py-3 px-4 text-sm text-gray-700">{{ $userItem->email }}</td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
+
             <!-- Detail Table: User yang Belum Lapor Hari Ini -->
-            <section class="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">User yang Belum Membuat Laporan Hari Ini</h2>
+            <section class="bg-white shadow-lg rounded-lg p-6 border border-gray-200 mt-8">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">User yang Belum Membuat Laporan Hari Ini</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-100">
@@ -147,7 +230,6 @@
                     </table>
                 </div>
             </section>
-
         </main>
     </div>
 
