@@ -85,7 +85,23 @@
     </style>
 </head>
 
+
 <body class="bg-gray-100">
+    @if (session()->has('original_user_id'))
+        <div id="switch-back-notification" class="fixed top-4 right-4 z-50 pointer-events-none">
+            <div
+                class="pointer-events-auto flex flex-col items-center px-4 py-3 rounded-lg bg-blue-500 bg-opacity-80 backdrop-blur-sm shadow-lg border border-blue-200">
+                <p class="text-sm font-semibold text-white">Mode Impersonasi Aktif</p>
+                <a href="{{ route('switchBack') }}"
+                    class="mt-1 inline-block text-xs font-medium text-white underline hover:text-white">
+                    Kembali ke Akun Admin
+                </a>
+            </div>
+        </div>
+    @endif
+
+
+
     <!-- Container Utama -->
     <div class="container mx-auto px-4 py-6">
         {{-- Header --}}
