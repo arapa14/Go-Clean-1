@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'index'])->name('auth.index');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
 // Role
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 
@@ -62,5 +61,6 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     
     // Manage Settings
     Route::get('/setting', [SettingController::class, 'index'])->name('setting');
+    Route::post('/setting/update', [SettingController::class, 'update'])->name('setting.update');
 });
 

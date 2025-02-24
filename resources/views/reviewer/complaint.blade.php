@@ -90,7 +90,7 @@
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Mobile Header -->
     <header class="bg-white shadow-md p-4 sm:hidden flex justify-between items-center">
-        <h1 class="text-xl font-bold text-blue-600">Status Laporan</h1>
+        <h1 class="text-xl font-bold text-blue-600">Pengaduan</h1>
         <button id="mobile-menu-button" class="text-blue-600 focus:outline-none">
             <i class="fa-solid fa-bars fa-2x"></i>
         </button>
@@ -106,7 +106,7 @@
                 <h2 class="text-2xl font-bold">
                     {{ Auth::check() ? (Auth::user()->role == 'reviewer' ? 'Reviewer Dashboard' : (Auth::user()->role == 'admin' ? 'Admin Dashboard' : 'Dashboard')) : 'Dashboard' }}
                 </h2>
-            </div>            
+            </div>
             <!-- Navigation -->
             <nav class="space-y-4">
                 @if (Auth::check())

@@ -146,7 +146,7 @@
 <body class="min-h-screen flex flex-col">
     <!-- Mobile Header -->
     <header class="bg-white shadow-md p-4 sm:hidden flex justify-between items-center">
-        <h1 class="text-xl font-bold text-blue-600">Analisis</h1>
+        <h1 class="text-xl font-bold text-blue-600">Manage Users</h1>
         <button id="mobile-menu-button" class="text-blue-600 focus:outline-none">
             <i class="fa-solid fa-bars fa-2x"></i>
         </button>
