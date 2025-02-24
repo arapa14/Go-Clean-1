@@ -282,6 +282,71 @@
         updateClock();
         setInterval(updateClock, 30000);
     </script>
+
+    @if ($shouldChangePassword)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Buat Password Baru',
+                    html: '<input type="password" id="new_password" class="swal2-input" placeholder="Password Baru">' +
+                        '<input type="password" id="confirm_password" class="swal2-input" placeholder="Konfirmasi Password">',
+                    icon: 'warning',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showCancelButton: false,
+                    confirmButtonText: 'Simpan',
+                    preConfirm: () => {
+                        const password = document.getElementById('new_password').value;
+                        const confirm = document.getElementById('confirm_password').value;
+                        if (!password || password.length < 6) {
+                            Swal.showValidationMessage('Password minimal 6 karakter');
+                        } else if (password !== confirm) {
+                            Swal.showValidationMessage('Konfirmasi password tidak cocok');
+                        }
+                        return {
+                            password: password
+                        };
+                    }
+                }).then((result) => {
+                    if (result.value) {
+                        fetch('{{ route('update.password') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    password: result.value.password,
+                                    password_confirmation: result.value.password
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Berhasil!',
+                                        text: data.success,
+                                        icon: 'success',
+                                        allowOutsideClick: false,
+                                        allowEscapeKey: false
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else if (data.error) {
+                                    Swal.fire('Error', data.error, 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Error', 'Gagal mengupdate password', 'error');
+                            });
+                    }
+                });
+            });
+        </script>
+    @endif
+
 </body>
 
 </html>

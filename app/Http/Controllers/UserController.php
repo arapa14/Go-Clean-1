@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -136,5 +137,37 @@ class UserController extends Controller
 
         //jika tidak ada ID asli di session, tampilkan error 403
         abort(403);
+    }
+
+    // Method updatePassword untuk mengganti password default
+    public function updatePassword(Request $request)
+    {
+        // Validasi: pastikan field password dan konfirmasi sesuai
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Validasi gagal!',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = Auth::user();
+
+        // Optional: Pastikan bahwa hanya user dengan password default yang dipaksa mengganti
+        if (!Hash::check('123123123', $user->password)) {
+            return response()->json([
+                'info' => 'Password Anda sudah diganti.'
+            ]);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return response()->json([
+            'success' => 'Password berhasil diperbarui!'
+        ]);
     }
 }

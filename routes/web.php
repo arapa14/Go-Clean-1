@@ -20,6 +20,11 @@ Route::get('/server-time', [AuthController::class, 'getServerTime']);
 Route::get('/switch/{id}', [UserController::class, 'switchAccount'])->name('switchAccount');
 Route::get('/switch-back', [UserController::class, 'switchBack'])->name('switchBack');
 
+Route::middleware('auth')->group(function () {
+    // Route untuk update password jika default
+    Route::post('/update-password', [UserController::class, 'updatePassword'])->name('update.password');
+});
+
 Route::middleware(['auth', 'isPetugas'])->group(function() {
     // Laporan Harian
     Route::post('/laporan', [ReportController::class, 'store'])->name('laporan.store');

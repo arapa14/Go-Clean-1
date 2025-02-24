@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -59,7 +60,7 @@ class AuthController extends Controller
         $totalReports = Report::count();
 
         // Hitung jumlah upload hari ini
-        $amountReportToday = Report::whereDate('created_at', $today)->count(); 
+        $amountReportToday = Report::whereDate('created_at', $today)->count();
 
         // Hitung jumlah pengguna berdasarkan role
         $juruBengkelCount = User::where('role', 'juru-bengkel')->count();
@@ -89,6 +90,12 @@ class AuthController extends Controller
         $countUsersWithReportToday = count($usersWithReportToday);
         $countUsersWithoutReportToday = count($usersWithoutReportToday);
 
+        // Cek apakah user menggunakan password default (123123123)
+        $shouldChangePassword = false;
+        if (Hash::check('123123123', $user->password)) {
+            $shouldChangePassword = true;
+        }
+
         // Buat array data yang akan dikirim ke view
         $analitik = compact(
             'juruBengkelCount',
@@ -97,11 +104,12 @@ class AuthController extends Controller
             'amountReportToday',
             'totalComplaints',
             'countUsersWithReportToday',
-            'countUsersWithoutReportToday'
+            'countUsersWithoutReportToday',
+            'shouldChangePassword'
         );
 
         // Data yang umum untuk semua role
-        $data = compact('user', 'locations', 'reports', 'reportToday', 'amountReportToday');
+        $data = compact('user', 'locations', 'reports', 'reportToday', 'amountReportToday', 'shouldChangePassword');
 
         switch ($user->role) {
             case 'admin':
