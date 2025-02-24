@@ -18,110 +18,130 @@ class DatabaseSeeder extends Seeder
         $users = [
             // Data Dummy
             [
-                'name'     => 'Caraka',
-                'email'    => 'caraka@gmail.com',
-                'role'     => 'petugas-kebersihan',
-                'password' => Hash::make('123123123'),
-            ],
-            [
-                'name'     => 'Reviewer',
-                'email'    => 'reviewer@gmail.com',
-                'role'     => 'reviewer',
-                'password' => Hash::make('123123123'),
-            ],
-            [
                 'name'     => 'Admin',
                 'email'    => 'admin@gmail.com',
                 'role'     => 'admin',
                 'password' => Hash::make('lorem-ipsum'),
             ],
+            [
+                'name'     => 'Reviewer',
+                'email'    => 'reviewer@gmail.com',
+                'role'     => 'reviewer',
+                'password' => Hash::make('lorem-ipsum'),
+            ],
+            [
+                'name'     => 'Caraka',
+                'email'    => 'caraka@gmail.com',
+                'role'     => 'petugas-kebersihan',
+                'password' => Hash::make('123123123'),
+            ],
 
-            // Data Caraka
+            // // Data Caraka - petugas-kebersihan
             [
                 'name'     => 'Ari Rusdiana',
                 'email'    => 'arirusdiana92@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$XTZurRPb.4UYaTe2mxZEtel5bKYDRLUxyMXnQ8HOZM5sc91KPXfFi',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Suhendi',
                 'email'    => 'suhend807@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$IwY0IbxG/4CSdAqfXcn71ec3kz.ZKfbUwQbsIGjkGy2whqX7xQf7m',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Herry Kurniawan',
                 'email'    => 'herry19933@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$ZVfA2IOjxlE.VCXwdBPtces8YYYTGvAsiXqog8zIVuWBDoOSGLHXW',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Devian Sukma Setiawan',
                 'email'    => 'devianalrescha63@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$pyB3ImU.ryaxAzJjFSF0rOifE.VIFv2aUwvV.z6zABYwf/fwM4mz6',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Hermanudin',
                 'email'    => 'herman251283@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$z/erN6ywUWMGRnQvHr2M6eAHZX8nvA99xzNRWT1cGXfE2dxFdjYaG',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Fauji Mutaqin',
                 'email'    => 'ubaylulu20@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$9qXZXP4ucWxZe1btTBRWSeQUM1ilyZQSLNLjS4O7mj9a.KmYfqUKO',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Darojatun Agung',
                 'email'    => 'dragtrisan@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$8R1shkZ/ss3RxSnvMVotP.uVoKn5KXlpWmpkhgvsJg585vPT67Kqa',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Muhamad Ihsanto',
                 'email'    => 'iksanxme@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$VbZdLjGDmt/2eUVAj.VmLeIBH8rOud3qCLvg/Iph8lfT6Yw9QaAQ.',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'ENDANG',
                 'email'    => 'yeyetendang1@gmail.com',
                 'role'     => 'petugas-kebersihan',
-                'password' => '$2y$12$YKwOm7.It0URH.RXXcPfr.TBRRvY2zhA/svRENMSBMRiZ8Ho2w1oS',
+                'password' => Hash::make('123123123'),
             ],
 
-            // Data Toolmen (disimpan dengan role 'caraka' namun aslinya toolmen)
+            // Data Toolmen = juru-bengkel
             [
                 'name'     => 'Ade Firman',
                 'email'    => 'adefirman768@gmail.com',
-                'role'     => 'juru-bengkel', // Aslinya toolmen
-                'password' => '$2y$12$bjQIAxZmvRaOA/HILOfCuOvtdwgnrY7tJiczwEPuXUXUSdN4yAMPe',
+                'role'     => 'juru-bengkel',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Muh Pratama Mukti ilmianto',
                 'email'    => 'mpratama012@gmail.com',
-                'role'     => 'juru-bengkel', // Aslinya toolmen
-                'password' => '$2y$12$CjAtJxVZw2R6lLeCiKFw5urfZ2N8xwO8aWXVurrmtgk8EMIGkkSJq',
+                'role'     => 'juru-bengkel',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Heriyadi',
                 'email'    => 'heriyadiy4@gmail.com',
-                'role'     => 'juru-bengkel', // Aslinya toolmen
-                'password' => '$2y$12$pnZTkwOAGWfNo9MiM0xYHe39u3pRE7dQLYU/UeIgGmw17ES0ijkHa',
+                'role'     => 'juru-bengkel',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'Mohammad Rahmat',
                 'email'    => 'rahmatboy7124@gmail.com',
-                'role'     => 'juru-bengkel', // Aslinya toolmen
-                'password' => '$2y$12$l4QjScGvWup2kmvIqy3qeewHG1S2YTju1XLNsug.7whHE3q1LG1j6',
+                'role'     => 'juru-bengkel',
+                'password' => Hash::make('123123123'),
             ],
             [
                 'name'     => 'M Agus Fadillah',
                 'email'    => 'magusfadillah84@gmail.com',
-                'role'     => 'juru-bengkel', // Aslinya toolmen
-                'password' => '$2y$12$19you/4ykE.b7zbbs1UQxu4RxYrL9pxNvtXO4ICTbHdKgfjhwRqXO',
+                'role'     => 'juru-bengkel',
+                'password' => Hash::make('123123123'),
+            ],
+
+            // Data Reviewer
+            [
+                'name'     => 'Angga',
+                'email'    => 'anggasukmanika@gmail.com',
+                'role'     => 'reviewer',
+                'password' => Hash::make('123123123'),
+            ],
+            [
+                'name'     => 'Nia Kurniawati',
+                'email'    => 'niakurniawati2009@gmail.com',
+                'role'     => 'reviewer',
+                'password' => Hash::make('123123123'),
+            ],
+            [
+                'name'     => 'Awalusilman',
+                'email'    => 'awalende@gmail.com',
+                'role'     => 'reviewer',
+                'password' => Hash::make('123123123'),
             ],
         ];
 
