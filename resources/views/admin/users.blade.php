@@ -13,17 +13,24 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        /* Custom sidebar transition */
+        /* Global Layout */
+        body {
+            background: #f9fafb;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Sidebar & Main Content Transition */
         #sidebar {
             transition: transform 0.3s ease-in-out;
         }
 
+        /* DataTables Customization */
         table.dataTable thead {
             background-color: #f3f4f6;
         }
 
-        /* Custom styling untuk DataTables agar selaras dengan Tailwind */
         .dataTables_wrapper .dataTables_paginate .paginate_button {
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
@@ -77,16 +84,66 @@
             color: #ffffff;
         }
 
-        /* Pastikan main tidak memicu overflow di layar kecil */
         @media (min-width: 640px) {
             main {
                 margin-left: 16rem;
             }
         }
+
+        /* Custom SweetAlert2 Styles */
+        .swal2-popup {
+            border-radius: 1rem;
+            font-size: 1rem;
+            padding: 1.5rem;
+        }
+
+        .swal2-title {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .swal2-content {
+            color: #374151;
+        }
+
+        .swal2-input,
+        .swal2-select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+        }
+
+        .swal2-confirm,
+        .swal2-cancel {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+        }
+
+        .swal2-confirm {
+            background-color: #3b82f6;
+            color: #ffffff;
+            margin: 0.5rem;
+        }
+
+        .swal2-cancel {
+            background-color: #f87171;
+            color: #ffffff;
+            margin: 0.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .swal2-popup {
+                width: 90% !important;
+            }
+        }
     </style>
 </head>
 
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
     <!-- Mobile Header -->
     <header class="bg-white shadow-md p-4 sm:hidden flex justify-between items-center">
         <h1 class="text-xl font-bold text-blue-600">Analisis</h1>
@@ -155,14 +212,17 @@
         <main class="flex-1 min-w-0 ml-0 sm:ml-64 p-4 sm:p-6 relative z-106">
             <div class="mt-6 bg-white shadow-md rounded-lg">
                 <div
-                    class="bg-blue-600 shadow-md rounded-t-lg p-4 flex flex-col sm:flex-row justify-between items-center">
+                    class="bg-blue-600 shadow-md rounded-t-lg p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <h1 class="text-2xl font-bold text-white">Manage Users</h1>
-                    <div class="flex gap-2">
+                    <div class="flex flex-col sm:flex-row gap-4 items-center">
                         <button id="addUserButton"
-                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md shadow-md">
-                            <i class="fas fa-user-plus"></i> Add User
+                            class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-5 py-2 rounded-md transition duration-300 shadow">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Add User</span>
                         </button>
-                        <span id="realTimeClock" class="text-white">Memuat Waktu...</span>
+                        <span id="realTimeClock" class="bg-white/20 text-white px-3 py-1 rounded-md font-medium">
+                            Memuat Waktu...
+                        </span>
                     </div>
                 </div>
                 <div class="p-4">
@@ -297,14 +357,18 @@
                 html: `<input id="swal-input1" class="swal2-input" placeholder="Name">
            <input id="swal-input2" class="swal2-input" placeholder="Email" type="email">
            <input id="swal-input3" class="swal2-input" placeholder="Password" type="password">
-           <select id="swal-input4" class="swal2-input">
-              <option value="admin">Admin</option>
-              <option value="reviewer">Reviewer</option>
-              <option value="petugas-kebersihan" selected>Petugas Kebersihan</option>
-              <option value="juru-bengkel" selected>Juru Bengkel</option>
+           <select id="swal-input4" class="swal2-select">
+            <option value="petugas-kebersihan">Petugas Kebersihan</option>
+            <option value="juru-bengkel">Juru Bengkel</option>
+            <option value="reviewer">Reviewer</option>
+            <option value="admin">Admin</option>
            </select>`,
                 focusConfirm: false,
                 showCancelButton: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel'
+                },
                 preConfirm: () => {
                     return {
                         name: document.getElementById('swal-input1').value,
@@ -337,22 +401,41 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                Swal.fire("Success!", "User created successfully!", "success")
-                                    .then(() => table.ajax.reload());
+                                Swal.fire({
+                                    title: "Success!",
+                                    text: "User created successfully!",
+                                    icon: "success",
+                                    customClass: {
+                                        confirmButton: 'swal2-confirm'
+                                    }
+                                }).then(() => table.ajax.reload());
                             } else {
-                                Swal.fire("Error!", data.error, "error");
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: data.error,
+                                    icon: "error",
+                                    customClass: {
+                                        confirmButton: 'swal2-confirm'
+                                    }
+                                });
                             }
                         })
                         .catch(error => {
-                            Swal.fire("Error!", "An error occurred.", "error");
+                            Swal.fire({
+                                title: "Error!",
+                                text: error,
+                                icon: "error",
+                                customClass: {
+                                    confirmButton: 'swal2-confirm'
+                                }
+                            });
                         });
                 }
             });
         });
 
-        // Edit User: Fungsi untuk menampilkan modal edit dan melakukan update data user
+        // Edit User: Menampilkan modal edit dan update data user
         function editUser(button) {
-            // Ambil data user dari atribut data-user (dikirim sebagai JSON oleh server di kolom action)
             const user = JSON.parse(button.getAttribute('data-user'));
 
             Swal.fire({
@@ -360,13 +443,18 @@
                 html: `<input id="swal-input1" class="swal2-input" placeholder="Name" value="${user.name}">
            <input id="swal-input2" class="swal2-input" placeholder="Email" value="${user.email}" type="email">
            <input id="swal-input3" class="swal2-input" placeholder="Password (kosongkan jika tidak diubah)" type="password">
-           <select id="swal-input4" class="swal2-input">
+           <select id="swal-input4" class="swal2-select">
               <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
               <option value="reviewer" ${user.role === 'reviewer' ? 'selected' : ''}>Reviewer</option>
-              <option value="caraka" ${user.role === 'caraka' ? 'selected' : ''}>Caraka</option>
+              <option value="petugas-kebersihan" ${user.role === 'petugas-kebersihan' ? 'selected' : ''}>Petugas Kebersihan</option>
+              <option value="juru-bengkel" ${user.role === 'juru-bengkel' ? 'selected' : ''}>Juru Bengkel</option>
            </select>`,
                 focusConfirm: false,
                 showCancelButton: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel'
+                },
                 preConfirm: () => {
                     return {
                         name: document.getElementById('swal-input1').value,
@@ -399,20 +487,40 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                Swal.fire("Updated!", "User has been updated.", "success")
-                                    .then(() => table.ajax.reload());
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: "User has been updated.",
+                                    icon: "success",
+                                    customClass: {
+                                        confirmButton: 'swal2-confirm'
+                                    }
+                                }).then(() => table.ajax.reload());
                             } else {
-                                Swal.fire("Error!", data.error, "error");
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: data.error,
+                                    icon: "error",
+                                    customClass: {
+                                        confirmButton: 'swal2-confirm'
+                                    }
+                                });
                             }
                         })
                         .catch(error => {
-                            Swal.fire("Error!", "An error occurred.", "error");
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An error occurred.",
+                                icon: "error",
+                                customClass: {
+                                    confirmButton: 'swal2-confirm'
+                                }
+                            });
                         });
                 }
             });
         }
 
-        // Delete User: Fungsi untuk menghapus user
+        // Delete User: Menghapus user dengan konfirmasi SweetAlert
         function deleteUser(userId) {
             Swal.fire({
                 title: "Are you sure?",
@@ -420,7 +528,11 @@
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "Cancel"
+                cancelButtonText: "Cancel",
+                customClass: {
+                    confirmButton: 'swal2-confirm',
+                    cancelButton: 'swal2-cancel'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch(`/user/${userId}`, {
@@ -432,14 +544,34 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                Swal.fire("Deleted!", "User has been deleted.", "success")
-                                    .then(() => table.ajax.reload());
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: "User has been deleted.",
+                                    icon: "success",
+                                    customClass: {
+                                        confirmButton: 'swal2-confirm'
+                                    }
+                                }).then(() => table.ajax.reload());
                             } else {
-                                Swal.fire("Error!", data.error, "error");
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: data.error,
+                                    icon: "error",
+                                    customClass: {
+                                        confirmButton: 'swal2-confirm'
+                                    }
+                                });
                             }
                         })
                         .catch(error => {
-                            Swal.fire("Error!", "An error occurred.", "error");
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An error occurred.",
+                                icon: "error",
+                                customClass: {
+                                    confirmButton: 'swal2-confirm'
+                                }
+                            });
                         });
                 }
             });

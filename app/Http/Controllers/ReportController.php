@@ -231,7 +231,7 @@ class ReportController extends Controller
         // Validasi input dari form
         $request->validate([
             'images'      => 'required',
-            'images.*'    => 'file|mimes:jpg,png|max:4096', // validasi untuk setiap file
+            'images.*'    => 'file|mimes:jpg,png', // validasi untuk setiap file
             'description' => 'required|string|max:255',
             'location'    => 'required|string|not_in:Pilih lokasi',
         ]);

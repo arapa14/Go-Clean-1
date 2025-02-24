@@ -18,6 +18,8 @@ Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard'
 
 // API
 Route::get('/server-time', [AuthController::class, 'getServerTime']);
+Route::get('/switch/{id}', [UserController::class, 'switchAccount'])->name('switchAccount');
+Route::get('/switch-back', [UserController::class, 'switchBack'])->name('switchBack');
 
 Route::middleware(['auth', 'isPetugas'])->group(function() {
     // Laporan Harian
@@ -50,11 +52,15 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
     Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.delete');
     
-    Route::get('/switch/{id}', [UserController::class, 'switch'])->name('user.switch');
-
     // Manage Locations
     Route::get('/location', [LocationController::class, 'index'])->name('location');
-
+    Route::get('/getLocations', [LocationController::class, 'getLocations'])->name('getLocations');
+    Route::post('/location', [LocationController::class, 'store'])->name('location.store');
+    Route::get('/location/{id}/edit', [LocationController::class, 'edit'])->name('location.edit');
+    Route::put('/location/{id}', [LocationController::class, 'update'])->name('location.update');
+    Route::delete('/location/{id}', [LocationController::class, 'destroy'])->name('location.delete');
+    
     // Manage Settings
     Route::get('/setting', [SettingController::class, 'index'])->name('setting');
 });
+
