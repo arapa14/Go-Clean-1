@@ -45,15 +45,11 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     // Manage Users
     Route::get('/user', [UserController::class, 'index'])->name('user');
     Route::get('/getUsers', [UserController::class, 'getUsers'])->name('getUsers');
-
-    // Route untuk menampilkan form edit user
+    Route::post('/user', [UserController::class, 'store'])->name('user.store'); 
     Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
-
-    // Route untuk mengupdate data user (menggunakan method PUT atau PATCH)
     Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
-
-    // Route untuk menghapus user
     Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.delete');
+    
     Route::get('/switch/{id}', [UserController::class, 'switch'])->name('user.switch');
 
     // Manage Locations

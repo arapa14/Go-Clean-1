@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom sidebar transition */
         #sidebar {
@@ -155,7 +157,13 @@
                 <div
                     class="bg-blue-600 shadow-md rounded-t-lg p-4 flex flex-col sm:flex-row justify-between items-center">
                     <h1 class="text-2xl font-bold text-white">Manage Users</h1>
-                    <span id="realTimeClock" class="text-white">Memuat Waktu...</span>
+                    <div class="flex gap-2">
+                        <button id="addUserButton"
+                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md shadow-md">
+                            <i class="fas fa-user-plus"></i> Add User
+                        </button>
+                        <span id="realTimeClock" class="text-white">Memuat Waktu...</span>
+                    </div>
                 </div>
                 <div class="p-4">
                     <div class="overflow-x-auto">
@@ -183,45 +191,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
     <script>
-        $(document).ready(function() {
-            $('#users-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('getUsers') }}',
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'role',
-                        name: 'role'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    }
-                ],
-                autowidth: false,
-                responsive: true,
-                language: {
-                    processing: '<i class="fas fa-spinner fa-spin"></i> Loading...'
-                }
-            });
-        });
-    </script>
-    <script>
+        // Mobile sidebar toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -235,7 +207,10 @@
             sidebar.classList.add('-translate-x-full');
             sidebarOverlay.classList.add('hidden');
         });
+    </script>
 
+    <script>
+        // Update real time clock (memanggil endpoint /server-time)
         function updateClock() {
             fetch('/server-time')
                 .then(response => response.json())
@@ -268,6 +243,207 @@
         }
         updateClock();
         setInterval(updateClock, 30000);
+    </script>
+
+    <script>
+        // Inisialisasi DataTables
+        var table = $('#users-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('getUsers') }}',
+            columns: [{
+                    data: 'id',
+                    name: 'id'
+                },
+                {
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'email',
+                    name: 'email'
+                },
+                {
+                    data: 'role',
+                    name: 'role',
+                    render: function(data) {
+                        return data.charAt(0).toUpperCase() + data.slice(1);
+                    }
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center'
+                }
+            ],
+            autoWidth: false,
+            responsive: true,
+            language: {
+                processing: '<i class="fas fa-spinner fa-spin"></i> Loading...'
+            }
+        });
+    </script>
+
+    <script>
+        // CSRF token untuk fetch request
+        const csrfToken = '{{ csrf_token() }}';
+
+        // Create User: Tampilkan modal untuk menambah user baru
+        document.getElementById('addUserButton').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Create User',
+                html: `<input id="swal-input1" class="swal2-input" placeholder="Name">
+           <input id="swal-input2" class="swal2-input" placeholder="Email" type="email">
+           <input id="swal-input3" class="swal2-input" placeholder="Password" type="password">
+           <select id="swal-input4" class="swal2-input">
+              <option value="admin">Admin</option>
+              <option value="reviewer">Reviewer</option>
+              <option value="petugas-kebersihan" selected>Petugas Kebersihan</option>
+              <option value="juru-bengkel" selected>Juru Bengkel</option>
+           </select>`,
+                focusConfirm: false,
+                showCancelButton: true,
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-input1').value,
+                        email: document.getElementById('swal-input2').value,
+                        password: document.getElementById('swal-input3').value,
+                        role: document.getElementById('swal-input4').value
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const {
+                        name,
+                        email,
+                        password,
+                        role
+                    } = result.value;
+                    fetch("{{ route('user.store') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                name,
+                                email,
+                                password,
+                                role
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire("Success!", "User created successfully!", "success")
+                                    .then(() => table.ajax.reload());
+                            } else {
+                                Swal.fire("Error!", data.error, "error");
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire("Error!", "An error occurred.", "error");
+                        });
+                }
+            });
+        });
+
+        // Edit User: Fungsi untuk menampilkan modal edit dan melakukan update data user
+        function editUser(button) {
+            // Ambil data user dari atribut data-user (dikirim sebagai JSON oleh server di kolom action)
+            const user = JSON.parse(button.getAttribute('data-user'));
+
+            Swal.fire({
+                title: 'Edit User',
+                html: `<input id="swal-input1" class="swal2-input" placeholder="Name" value="${user.name}">
+           <input id="swal-input2" class="swal2-input" placeholder="Email" value="${user.email}" type="email">
+           <input id="swal-input3" class="swal2-input" placeholder="Password (kosongkan jika tidak diubah)" type="password">
+           <select id="swal-input4" class="swal2-input">
+              <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+              <option value="reviewer" ${user.role === 'reviewer' ? 'selected' : ''}>Reviewer</option>
+              <option value="caraka" ${user.role === 'caraka' ? 'selected' : ''}>Caraka</option>
+           </select>`,
+                focusConfirm: false,
+                showCancelButton: true,
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-input1').value,
+                        email: document.getElementById('swal-input2').value,
+                        password: document.getElementById('swal-input3').value,
+                        role: document.getElementById('swal-input4').value
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const {
+                        name,
+                        email,
+                        password,
+                        role
+                    } = result.value;
+                    fetch(`/user/${user.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                name,
+                                email,
+                                password,
+                                role
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire("Updated!", "User has been updated.", "success")
+                                    .then(() => table.ajax.reload());
+                            } else {
+                                Swal.fire("Error!", data.error, "error");
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire("Error!", "An error occurred.", "error");
+                        });
+                }
+            });
+        }
+
+        // Delete User: Fungsi untuk menghapus user
+        function deleteUser(userId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/user/${userId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire("Deleted!", "User has been deleted.", "success")
+                                    .then(() => table.ajax.reload());
+                            } else {
+                                Swal.fire("Error!", data.error, "error");
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire("Error!", "An error occurred.", "error");
+                        });
+                }
+            });
+        }
     </script>
 </body>
 
