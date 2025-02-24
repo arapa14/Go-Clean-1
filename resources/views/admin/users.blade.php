@@ -99,7 +99,7 @@
             class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6 fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
             <!-- Logo/Title -->
             <div class="text-center border-b border-blue-400 pb-4">
-                <h2 class="text-2xl font-bold">Reviewer Dashboard</h2>
+                <h2 class="text-2xl font-bold">Admin Dashboard</h2>
             </div>
             <nav class="space-y-4">
                 <a href="{{ route('dashboard') }}"
