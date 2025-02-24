@@ -29,11 +29,27 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate();
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'redirect_url' => route('dashboard')
+                ]);
+            }
+
             return redirect()->route('dashboard')->with('success', 'Login Berhasil');
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'error' => 'Email atau password salah!'
+            ], 422);
         }
 
         return redirect()->back()->with('error', 'Email atau password salah!');
     }
+
 
     public function logout()
     {

@@ -36,23 +36,23 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'pagi_end',
-                'value' => '12'
+                'value' => '09'
             ],
             [
                 'key' => 'siang_start',
-                'value' => '12'
+                'value' => '09'
             ],
             [
                 'key' => 'siang_end',
-                'value' => '15'
+                'value' => '13'
             ],
             [
                 'key' => 'sore_start',
-                'value' => '15'
+                'value' => '13'
             ],
             [
                 'key' => 'sore_end',
-                'value' => '17'
+                'value' => '16'
             ]
         ];    
 
