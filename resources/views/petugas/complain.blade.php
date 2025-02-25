@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         /* Custom styling untuk DataTables agar selaras dengan Tailwind */
         .dataTables_wrapper .dataTables_paginate .paginate_button {
@@ -158,14 +161,29 @@
 
                 {{-- Input Jenis Komplain --}}
                 <div class="mb-4">
-                    <label for="complaint" class="block text-sm font-medium text-gray-700">Jenis Komplain</label>
-                    <select name="complaint" id="complaint" class="w-full p-2 border rounded-md" required>
-                        <option value="">Pilih Jenis Komplain</option>
-                        <option value="missing">Kehilangan</option>
-                        <option value="broken">Kerusakan</option>
-                        <option value="require">Membutuhkan</option>
-                    </select>
+                    <label class="block text-lg font-semibold text-gray-700">Jenis Komplain</label>
+                    <div class="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <label
+                            class="cursor-pointer flex items-center p-4 border rounded-lg hover:shadow-lg transition duration-200">
+                            <input type="radio" name="complaint" value="missing"
+                                class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500" required>
+                            <span class="ml-3 text-gray-800">Kehilangan</span>
+                        </label>
+                        <label
+                            class="cursor-pointer flex items-center p-4 border rounded-lg hover:shadow-lg transition duration-200">
+                            <input type="radio" name="complaint" value="broken"
+                                class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500" required>
+                            <span class="ml-3 text-gray-800">Kerusakan</span>
+                        </label>
+                        <label
+                            class="cursor-pointer flex items-center p-4 border rounded-lg hover:shadow-lg transition duration-200">
+                            <input type="radio" name="complaint" value="require"
+                                class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500" required>
+                            <span class="ml-3 text-gray-800">Membutuhkan</span>
+                        </label>
+                    </div>
                 </div>
+
 
                 {{-- Input Lokasi --}}
                 <div class="mb-4">

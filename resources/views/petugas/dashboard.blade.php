@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
         /* Custom styles untuk ikon */
@@ -179,8 +181,8 @@
 
                 {{-- Input Lokasi --}}
                 <div class="mt-4">
-                    <select name="location" class="w-full p-2 border rounded-md">
-                        <option>Pilih lokasi</option>
+                    <select name="location" class="w-full p-2 border rounded-md select2">
+                        <option value="">Pilih lokasi</option>
                         @foreach ($locations as $location)
                             <option value="{{ $location->location }}">{{ $location->location }}</option>
                         @endforeach
@@ -442,6 +444,20 @@
             });
         </script>
     @endif
+
+    <!-- jQuery (jika belum disertakan) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Pilih lokasi",
+                allowClear: true
+            });
+        });
+    </script>
+
 
 </body>
 
