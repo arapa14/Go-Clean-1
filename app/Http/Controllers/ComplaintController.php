@@ -223,6 +223,7 @@ class ComplaintController extends Controller
         if ($request->ajax()) {
             $complaints = Complaint::where('user_id', $user->id)->orderBy('created_at', 'desc');
             return datatables()->of($complaints)
+                ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
                 ->addColumn('action', function ($row) {
                     // Decode JSON untuk mendapatkan array gambar
                     $images = json_decode($row->image, true);
@@ -263,6 +264,7 @@ class ComplaintController extends Controller
         $reports = Complaint::orderBy('created_at', 'desc');
 
         return DataTables::of($reports)
+            ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
             ->editColumn('created_at', function ($row) {
                 return Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
             })

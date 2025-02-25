@@ -200,7 +200,7 @@
                     <table id="complaints-table" class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
-                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">ID</th>
+                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">No</th>
                                 <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Jenis Komplain</th>
                                 <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Deskripsi</th>
                                 <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Lokasi</th>
@@ -226,8 +226,10 @@
                 serverSide: true,
                 ajax: '{{ route('complainPage') }}',
                 columns: [{
-                        data: 'id',
-                        name: 'id'
+                        data: 'DT_RowIndex', // Mengambil nomor urut dari addIndexColumn()
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'complaint',

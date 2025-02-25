@@ -342,7 +342,7 @@
                                     <label for="nama_sistem" class="block text-gray-700 font-semibold">Nama
                                         Sistem:</label>
                                     <input type="text" id="nama_sistem" name="nama_sistem"
-                                        value="{{ $settings['name'] ?? '' }}"
+                                        placeholder="{{ $settings['name'] ?? '' }}"
                                         class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
                                 </div>
                                 <div>

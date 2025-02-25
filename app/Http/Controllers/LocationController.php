@@ -20,6 +20,7 @@ class LocationController extends Controller
         $locations = Location::all();
 
         return DataTables::of($locations)
+            ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
             ->addColumn('action', function ($row) {
                 // Tombol edit (mengirim data location dalam format JSON)
                 $editIcon = '<button data-location=\'' . json_encode($row) . '\' onclick="editLocation(this)" class="action-icon btn-edit" title="Edit Location"><i class="fa-solid fa-pen-to-square"></i></button>';

@@ -93,12 +93,13 @@
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Mobile Header -->
-    <div class="bg-white shadow-md rounded-lg p-4 flex flex-wrap sm:flex-row justify-between items-center mb-6 sm:hidden">
+    <div
+        class="bg-white shadow-md rounded-lg p-4 flex flex-wrap sm:flex-row justify-between items-center mb-6 sm:hidden">
         <h1 class="text-xl font-bold text-blue-600">Status Laporan</h1>
         <button id="mobile-menu-button" class="text-blue-600 focus:outline-none">
             <i class="fa-solid fa-bars fa-2x"></i>
         </button>
-    </div>    
+    </div>
 
     <div class="flex flex-1">
         <!-- Sidebar -->
@@ -111,7 +112,7 @@
                     {{ Auth::check() ? (Auth::user()->role == 'reviewer' ? 'Reviewer Dashboard' : (Auth::user()->role == 'admin' ? 'Admin Dashboard' : 'Dashboard')) : 'Dashboard' }}
                 </h2>
             </div>
-            
+
             <!-- Navigation -->
             <nav class="space-y-4">
                 @if (Auth::check())
@@ -207,7 +208,7 @@
                     <table id="reports-table" class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">No</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nama</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Deskripsi</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Lokasi</th>
@@ -247,8 +248,10 @@
                 serverSide: true,
                 ajax: '{{ route('getStatus') }}',
                 columns: [{
-                        data: 'id',
-                        name: 'id'
+                        data: 'DT_RowIndex', // Mengambil nomor urut dari addIndexColumn()
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'name',
@@ -313,13 +316,29 @@
                         status: newStatus
                     },
                     success: function(response) {
+                        // Tampilkan notifikasi sukses
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        // Reload tabel tanpa mereset paging
                         table.ajax.reload(null, false);
                     },
                     error: function(xhr) {
+                        // Tampilkan notifikasi error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'Terjadi kesalahan saat memperbarui status.'
+                        });
                         table.ajax.reload(null, false);
                     }
                 });
             });
+
 
             // Handler untuk Approve Semua button
             $(document).on('click', '#approve-all-btn', function(e) {

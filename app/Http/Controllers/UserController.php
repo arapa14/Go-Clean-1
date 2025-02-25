@@ -24,6 +24,7 @@ class UserController extends Controller
         $users = User::all();
 
         return DataTables::of($users)
+            ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
             ->addColumn('action', function ($row) {
                 // Tombol edit menggunakan modal (data-user berisi JSON user)
                 $editIcon = '<button data-user=\'' . json_encode($row) . '\' onclick="editUser(this)" class="action-icon btn-edit" title="Edit User"><i class="fa-solid fa-pen-to-square"></i></button>';

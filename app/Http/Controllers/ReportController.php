@@ -290,7 +290,7 @@ class ReportController extends Controller
         $reports = Report::where('user_id', $userId)->orderBy('created_at', 'desc');
 
         return DataTables::of($reports)
-            // Ubah kolom status untuk menampilkan badge dengan warna berbeda
+            ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
             ->editColumn('status', function ($row) {
                 if ($row->status === 'approved') {
                     return '<span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs font-semibold uppercase">Approved</span>';
@@ -305,7 +305,7 @@ class ReportController extends Controller
                 $images = json_decode($row->image, true);
                 // Ambil gambar pertama, jika ada
                 $firstImage = !empty($images) ? $images[0] : '';
-            
+
                 // Icon untuk melihat gambar
                 $viewIcon = '<a href="' . asset('storage/' . $firstImage) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
                            <i class="fa-solid fa-eye"></i>
@@ -319,6 +319,7 @@ class ReportController extends Controller
             ->rawColumns(['status', 'action'])
             ->make(true);
     }
+
 
     // reviewer and admin
 
@@ -334,6 +335,7 @@ class ReportController extends Controller
         $reports = Report::orderBy('created_at', 'desc');
 
         return DataTables::of($reports)
+            ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
             // Kolom status diubah menjadi dropdown
             ->editColumn('status', function ($row) {
                 $statuses = [

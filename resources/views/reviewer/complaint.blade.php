@@ -195,7 +195,7 @@
                     <table id="reports-table" class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">ID</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">No</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nama</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Pengaduan</th>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Deskripsi</th>
@@ -221,8 +221,10 @@
                 serverSide: true,
                 ajax: '{{ route('getComplaint') }}',
                 columns: [{
-                        data: 'id',
-                        name: 'id'
+                        data: 'DT_RowIndex', // Mengambil nomor urut dari addIndexColumn()
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'name',

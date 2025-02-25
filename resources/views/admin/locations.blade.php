@@ -225,7 +225,7 @@
                         <table id="locations-table" class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-100">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">ID</th>
+                                    <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">No</th>
                                     <th class="px-6 py-3 text-left text-sm font-medium text-gray-700">Location</th>
                                     <th class="px-6 py-3 text-center text-sm font-medium text-gray-700">Action</th>
                                 </tr>
@@ -305,8 +305,10 @@
             serverSide: true,
             ajax: '{{ route('getLocations') }}',
             columns: [{
-                    data: 'id',
-                    name: 'id'
+                    data: 'DT_RowIndex', // Mengambil nomor urut dari addIndexColumn()
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'location',
