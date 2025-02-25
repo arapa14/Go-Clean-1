@@ -37,7 +37,7 @@
             <nav class="space-y-4">
                 <a href="{{ route('dashboard') }}"
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
-                    <i class="fa-solid fa-chart-line w-5 mr-3"></i>
+                    <i class="fa-solid fa-house w-5 mr-3"></i>
                     <span class="font-semibold">Dashboard</span>
                 </a>
                 <a href="{{ route('status') }}"

@@ -54,17 +54,17 @@ s
                 <a href="{{ route('user') }}"
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('user') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-users w-5 mr-3"></i>
-                    <span class="font-semibold">Manage Users</span>
+                    <span class="font-semibold">Kelola Pengguna</span>
                 </a>
                 <a href="{{ route('location') }}"
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('location') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-map-marker-alt w-5 mr-3"></i>
-                    <span class="font-semibold">Manage Locations</span>
+                    <span class="font-semibold">Kelola Lokasi</span>
                 </a>
                 <a href="{{ route('setting') }}"
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('setting') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-cog w-5 mr-3"></i>
-                    <span class="font-semibold">Manage Settings</span>
+                    <span class="font-semibold">Kelola Pengaturan</span>
                 </a>
             </nav>
             <!-- Sidebar Footer (Logout) -->
