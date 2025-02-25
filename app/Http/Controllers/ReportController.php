@@ -169,23 +169,17 @@ class ReportController extends Controller
         $settings = Setting::all()->pluck('value', 'key')->toArray();
 
         // Konfigurasi dinamis dari settings
-        // Jika tidak ditemukan, gunakan default value
-        $enable_time_restriction = isset($settings['enable_time_restriction'])
-            ? ($settings['enable_time_restriction'] == '1')
-            : true;
+        $enable_time_restriction = $settings['enable_time_restriction'] ?? '1';
+        $enable_session_restriction = $settings['enable_session_restriction'] ?? '0';
 
-        $enable_session_restriction = isset($settings['enable_session_restriction'])
-            ? ($settings['enable_session_restriction'] == '1')
-            : false; // default false jika tidak di-set
+        $pagi_start  = (int) ($settings['pagi_start'] ?? 6);
+        $pagi_end    = (int) ($settings['pagi_end'] ?? 12);
+        $siang_start = (int) ($settings['siang_start'] ?? 12);
+        $siang_end   = (int) ($settings['siang_end'] ?? 15);
+        $sore_start  = (int) ($settings['sore_start'] ?? 15);
+        $sore_end    = (int) ($settings['sore_end'] ?? 17);
 
-        $pagi_start  = isset($settings['pagi_start'])  ? (int)$settings['pagi_start']  : 6;
-        $pagi_end    = isset($settings['pagi_end'])    ? (int)$settings['pagi_end']    : 12;
-        $siang_start = isset($settings['siang_start']) ? (int)$settings['siang_start'] : 12;
-        $siang_end   = isset($settings['siang_end'])   ? (int)$settings['siang_end']   : 15;
-        $sore_start  = isset($settings['sore_start'])  ? (int)$settings['sore_start']  : 15;
-        $sore_end    = isset($settings['sore_end'])    ? (int)$settings['sore_end']    : 17;
-
-        // Tentukan sesi berdasarkan waktu saat ini menggunakan setting
+        // Tentukan sesi berdasarkan waktu saat ini
         if ($currentHour >= $pagi_start && $currentHour < $pagi_end) {
             $session = 'pagi';
         } elseif ($currentHour >= $siang_start && $currentHour < $siang_end) {
@@ -201,11 +195,11 @@ class ReportController extends Controller
             $session = 'invalid';
         }
 
-        // Jika pembatasan sesi diaktifkan, cek apakah user sudah mengirim report pada sesi ini hari ini
+        // Cek jika sesi terbatas dan user sudah kirim di sesi ini
         if ($enable_session_restriction) {
             $reportSesiIni = Report::where('user_id', $user->id)
                 ->whereDate('created_at', $today)
-                ->where('time', $session)
+                ->where('session', $session)
                 ->exists();
 
             if ($reportSesiIni) {
@@ -215,7 +209,7 @@ class ReportController extends Controller
             }
         }
 
-        // Jika pembatasan jumlah upload diaktifkan, hitung report hari ini dan batasi maksimal 3 report per hari
+        // Batasi maksimal 3 laporan per hari (bukan per gambar)
         if ($enable_time_restriction) {
             $jumlahReportHariIni = Report::where('user_id', $user->id)
                 ->whereDate('created_at', $today)
@@ -228,28 +222,29 @@ class ReportController extends Controller
             }
         }
 
-        // Validasi input dari form
+        // **Validasi Input**
         $request->validate([
-            'images'      => 'required',
-            'images.*'    => 'file|mimes:jpg,png', // validasi untuk setiap file
+            'images'      => 'required|array|min:1', // Pastikan ada minimal 1 gambar
+            'images.*'    => 'file|mimes:jpg,png', // Maksimum 2MB per file
             'description' => 'required|string|max:255',
             'location'    => 'required|string|not_in:Pilih lokasi',
         ]);
 
-        // Ambil array file gambar
-        $imageFiles = $request->file('images');
+        // Pastikan images selalu dalam bentuk array
+        $imageFiles = (array) $request->file('images');
 
-        // Konfigurasi lainnya
+        // **Konfigurasi Watermark & Penyimpanan**
         $imageNamePrefix = 'report';
         $directory = 'image';
-        $userName = auth()->check() ? auth()->user()->name : 'Guest';
+        $userName = $user->name ?? 'Guest';
         $watermarkText = $userName . " - " . now()->format('d/m/Y H:i:s');
         $fontPath = public_path('arial.ttf');
 
         try {
-            // Proses tiap file yang diupload
+            $imagePaths = []; // Untuk menyimpan path gambar
+
             foreach ($imageFiles as $imageFile) {
-                // Proses gambar dengan fungsi processImage()
+                // Proses gambar dengan fungsi `processImage()`
                 $processedImagePath = $this->processImage(
                     $imageFile,
                     $imageNamePrefix,
@@ -258,18 +253,21 @@ class ReportController extends Controller
                     $fontPath
                 );
 
-                // Simpan report baru untuk tiap gambar
-                $report = new Report();
-                $report->user_id     = Auth::id();
-                $report->name        = Auth::user()->name;
-                $report->description = $request->input('description');
-                $report->location    = $request->input('location');
-                $report->date        = now();
-                $report->session     = $session;
-                $report->status      = 'pending';
-                $report->image       = $processedImagePath;
-                $report->save();
+                // Simpan path gambar
+                $imagePaths[] = $processedImagePath;
             }
+
+            // **Simpan Report** (satu report per banyak gambar)
+            $report = new Report();
+            $report->user_id     = $user->id;
+            $report->name        = $user->name;
+            $report->description = $request->input('description');
+            $report->location    = $request->input('location');
+            $report->date        = now();
+            $report->session     = $session;
+            $report->status      = 'pending';
+            $report->image       = json_encode($imagePaths); // Simpan array gambar sebagai JSON
+            $report->save();
 
             return redirect()->back()->with('success', 'Berhasil mengirim report.');
         } catch (\Exception $e) {
@@ -277,6 +275,7 @@ class ReportController extends Controller
             return redirect()->back()->with('error', 'Gagal mengirim report');
         }
     }
+
 
     public function riwayat()
     {

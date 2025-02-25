@@ -263,14 +263,15 @@ class ComplaintController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $viewIcon = '<a href="' . asset('storage/' . $row->image) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
-                            <i class="fa-solid fa-eye"></i>
-                         </a>';
-                $downloadIcon = '<a href="' . asset('storage/' . $row->image) . '" download class="action-icon btn-download" title="Download Gambar">
-                                <i class="fa-solid fa-download"></i>
+                                <i class="fa-solid fa-eye"></i>
                              </a>';
+                $downloadIcon = '<a href="' . asset('storage/' . $row->image) . '" download class="action-icon btn-download" title="Download Gambar">
+                                    <i class="fa-solid fa-download"></i>
+                                 </a>';
                 return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
             })
-            ->rawColumns(['status', 'action'])
+            
+            ->rawColumns(['action'])
             ->make(true);
     }
 }
