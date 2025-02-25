@@ -156,6 +156,32 @@
         <!-- Sidebar -->
         <aside id="sidebar"
             class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6 fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
+            @php
+                // Ambil data setting dari database sebagai array key-value
+                $appSettings = \App\Models\Setting::pluck('value', 'key')->toArray();
+            @endphp
+
+            <!-- Fancy Logo & Nama Aplikasi (Ukuran Lebih Kecil) -->
+            <div class="flex flex-col items-center border-b border-blue-400 pb-4">
+                <div class="relative flex flex-col items-center justify-center">
+                    @if (isset($appSettings['logo']))
+                        <div class="w-8 h-8 mb-1 relative">
+                            <!-- Logo dengan efek hover zoom dan bayangan -->
+                            <img src="{{ asset($appSettings['logo']) }}" alt="{{ $appSettings['name'] }}"
+                                class="w-full h-full object-cover rounded-full border border-white shadow-md transform hover:scale-110 transition duration-300 ease-in-out">
+                            <!-- Overlay gradient berdenyut -->
+                            <div
+                                class="absolute inset-0 rounded-full border border-transparent bg-gradient-to-r from-blue-400 to-green-400 opacity-50 animate-pulse">
+                            </div>
+                        </div>
+                    @endif
+                    @if (isset($appSettings['name']))
+                        <h2 class="text-base font-semibold text-white tracking-wide drop-shadow">
+                            {{ $appSettings['name'] }}
+                        </h2>
+                    @endif
+                </div>
+            </div>
             <!-- Logo/Title -->
             <div class="text-center border-b border-blue-400 pb-4">
                 <h2 class="text-2xl font-bold">Admin Dashboard</h2>

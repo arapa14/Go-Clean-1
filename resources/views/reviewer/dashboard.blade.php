@@ -28,43 +28,70 @@
 
     <div class="flex flex-1">
         <!-- Sidebar -->
-        <aside id="sidebar"
-            class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6 fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
-            <!-- Logo/Title -->
+        <aside id="sidebar" class="bg-gradient-to-b from-blue-600 to-blue-800 text-white w-64 space-y-6 p-6 fixed inset-y-0 left-0 transform -translate-x-full sm:translate-x-0 z-50">
+            @php
+                // Ambil data setting dari database sebagai array key-value
+                $appSettings = \App\Models\Setting::pluck('value', 'key')->toArray();
+            @endphp
+        
+            <!-- Fancy Logo & Nama Aplikasi (Ukuran Lebih Kecil) -->
+            <div class="flex flex-col items-center border-b border-blue-400 pb-4">
+                <div class="relative flex flex-col items-center justify-center">
+                    @if(isset($appSettings['logo']))
+                        <div class="w-8 h-8 mb-1 relative">
+                            <!-- Logo dengan efek hover zoom dan bayangan -->
+                            <img src="{{ asset($appSettings['logo']) }}" alt="{{ $appSettings['name'] }}" class="w-full h-full object-cover rounded-full border border-white shadow-md transform hover:scale-110 transition duration-300 ease-in-out">
+                            <!-- Overlay gradient berdenyut -->
+                            <div class="absolute inset-0 rounded-full border border-transparent bg-gradient-to-r from-blue-400 to-green-400 opacity-50 animate-pulse"></div>
+                        </div>
+                    @endif
+                    @if(isset($appSettings['name']))
+                        <h2 class="text-base font-semibold text-white tracking-wide drop-shadow">
+                            {{ $appSettings['name'] }}
+                        </h2>
+                    @endif
+                </div>
+            </div>
+        
+            <!-- Judul Tambahan -->
             <div class="text-center border-b border-blue-400 pb-4">
                 <h2 class="text-2xl font-bold">Reviewer Dashboard</h2>
             </div>
+        
+            <!-- Navigation Menu -->
             <nav class="space-y-4">
                 <a href="{{ route('dashboard') }}"
-                    class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                   class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('dashboard') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-house w-5 mr-3"></i>
                     <span class="font-semibold">Dashboard</span>
                 </a>
                 <a href="{{ route('status') }}"
-                    class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('status') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                   class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('status') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-clipboard-list w-5 mr-3"></i>
                     <span class="font-semibold">Lihat Laporan</span>
                 </a>
                 <a href="{{ route('complaint') }}"
-                    class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('getComplaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
+                   class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('getComplaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-comments w-5 mr-3"></i>
                     <span class="font-semibold">Lihat Pengaduan</span>
                 </a>
             </nav>
-
-
+        
             <!-- Sidebar Footer (Logout) -->
             <div class="border-t border-blue-400 pt-4">
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit"
-                        class="w-full flex items-center justify-center p-2 rounded hover:bg-blue-700 transition-colors text-red-200">
+                            class="w-full flex items-center justify-center p-2 rounded hover:bg-blue-700 transition-colors text-red-200">
                         <i class="fa-solid fa-right-from-bracket w-5 mr-2"></i>
                         Logout
                     </button>
                 </form>
             </div>
         </aside>
+        
+
+
 
         <!-- Overlay for Mobile -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-50 hidden z-40 sm:hidden"></div>
