@@ -224,12 +224,17 @@ class ComplaintController extends Controller
             $complaints = Complaint::where('user_id', $user->id)->orderBy('created_at', 'desc');
             return datatables()->of($complaints)
                 ->addColumn('action', function ($row) {
+                    // Decode JSON untuk mendapatkan array gambar
+                    $images = json_decode($row->image, true);
+                    // Ambil gambar pertama, jika ada
+                    $firstImage = !empty($images) ? $images[0] : '';
+
                     // Icon untuk melihat gambar
-                    $viewIcon = '<a href="' . asset('storage/' . $row->image) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
+                    $viewIcon = '<a href="' . asset('storage/' . $firstImage) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
                            <i class="fa-solid fa-eye"></i>
                          </a>';
                     // Icon untuk mendownload gambar
-                    $downloadIcon = '<a href="' . asset('storage/' . $row->image) . '" download class="action-icon btn-download" title="Download Gambar">
+                    $downloadIcon = '<a href="' . asset('storage/' . $firstImage) . '" download class="action-icon btn-download" title="Download Gambar">
                                <i class="fa-solid fa-download"></i>
                              </a>';
                     return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
@@ -262,15 +267,20 @@ class ComplaintController extends Controller
                 return Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
             })
             ->addColumn('action', function ($row) {
-                $viewIcon = '<a href="' . asset('storage/' . $row->image) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
+                // Decode JSON untuk mendapatkan array gambar
+                $images = json_decode($row->image, true);
+                // Ambil gambar pertama, jika ada
+                $firstImage = !empty($images) ? $images[0] : '';
+
+                $viewIcon = '<a href="' . asset('storage/' . $firstImage) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
                                 <i class="fa-solid fa-eye"></i>
                              </a>';
-                $downloadIcon = '<a href="' . asset('storage/' . $row->image) . '" download class="action-icon btn-download" title="Download Gambar">
+                $downloadIcon = '<a href="' . asset('storage/' . $firstImage) . '" download class="action-icon btn-download" title="Download Gambar">
                                     <i class="fa-solid fa-download"></i>
                                  </a>';
                 return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
             })
-            
+
             ->rawColumns(['action'])
             ->make(true);
     }

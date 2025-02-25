@@ -227,10 +227,20 @@
                     @foreach ($reportToday as $report)
                         <div class="bg-white shadow-lg rounded-xl border flex flex-col">
                             <!-- Bagian Gambar -->
-                            <div
-                                class="relative w-full h-48 bg-gray-200 rounded-t-xl overflow-hidden flex items-center justify-center">
-                                <img src="{{ asset('storage/' . $report->image) }}" alt="Report Image"
-                                    class="object-contain w-full h-full" />
+                            <div class="p-2">
+                                @php
+                                    $images = json_decode($report->image);
+                                    $columns = count($images) > 1 ? 2 : 1;
+                                @endphp
+                                <div class="grid grid-cols-{{ $columns }} gap-2">
+                                    @foreach ($images as $image)
+                                        <div
+                                            class="bg-gray-200 rounded overflow-hidden h-48 flex items-center justify-center">
+                                            <img src="{{ asset('storage/' . $image) }}" alt="Report Image"
+                                                class="object-contain max-w-full max-h-full">
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
 
                             <!-- Bagian Konten -->
@@ -256,8 +266,10 @@
                                     <span
                                         class="px-3 py-1 font-semibold rounded-lg
                                     @if ($report->status == 'approved') bg-green-100 text-green-600 
-                                    @elseif($report->status == 'rejected') bg-red-100 text-red-600
-                                    @else bg-yellow-100 text-yellow-600 @endif">
+                                    @elseif($report->status == 'rejected')
+                                        bg-red-100 text-red-600
+                                    @else
+                                        bg-yellow-100 text-yellow-600 @endif">
                                         {{ ucfirst($report->status) }}
                                     </span>
                                 </div>
@@ -265,6 +277,8 @@
                         </div>
                     @endforeach
                 </div>
+
+
 
             @endif
         </div>
