@@ -76,6 +76,11 @@ s
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-comments w-5 mr-3"></i>
                     <span class="font-semibold">Lihat Pengaduan</span>
+                    <!-- Badge untuk totalNewComplaints -->
+                    <span
+                        class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                        {{ $totalNewComplaints }}
+                    </span>
                 </a>
                 <a href="{{ route('user') }}"
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('user') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
@@ -120,90 +125,104 @@ s
             <!-- Container Utama untuk Analitik -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Analytics Cards Grid: 2 kolom di mobile, 3 di tablet, 4 di desktop -->
-                <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+
                     <!-- Card: Juru Bengkel -->
                     <div
-                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
                         <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-blue-100 text-blue-600 mr-2">
-                                <i class="fas fa-tools text-lg"></i>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-3">
+                                <i class="fas fa-tools text-xl"></i>
                             </div>
-                            <h2 class="text-sm font-semibold text-gray-800">Juru Bengkel</h2>
+                            <h2 class="text-base font-semibold text-gray-800">Juru Bengkel</h2>
                         </div>
-                        <p class="mt-2 text-2xl font-bold text-blue-600">{{ $juruBengkelCount }}</p>
+                        <p class="mt-3 text-3xl font-bold text-blue-600">{{ $juruBengkelCount }}</p>
                     </div>
 
                     <!-- Card: Petugas Kebersihan -->
                     <div
-                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
                         <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-green-100 text-green-600 mr-2">
-                                <i class="fas fa-broom text-lg"></i>
+                            <div class="p-3 rounded-full bg-green-100 text-green-600 mr-3">
+                                <i class="fas fa-broom text-xl"></i>
                             </div>
-                            <h2 class="text-sm font-semibold text-gray-800">Petugas Kebersihan</h2>
+                            <h2 class="text-base font-semibold text-gray-800">Petugas Kebersihan</h2>
                         </div>
-                        <p class="mt-2 text-2xl font-bold text-green-600">{{ $petugasKebersihanCount }}</p>
+                        <p class="mt-3 text-3xl font-bold text-green-600">{{ $petugasKebersihanCount }}</p>
                     </div>
 
                     <!-- Card: Jumlah Laporan -->
                     <div
-                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
                         <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-purple-100 text-purple-600 mr-2">
-                                <i class="fas fa-file-alt text-lg"></i>
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-3">
+                                <i class="fas fa-file-alt text-xl"></i>
                             </div>
-                            <h2 class="text-sm font-semibold text-gray-800">Jumlah Laporan</h2>
+                            <h2 class="text-base font-semibold text-gray-800">Jumlah Laporan</h2>
                         </div>
-                        <p class="mt-2 text-2xl font-bold text-purple-600">{{ $totalReports }}</p>
+                        <p class="mt-3 text-3xl font-bold text-purple-600">{{ $totalReports }}</p>
                     </div>
 
                     <!-- Card: Laporan Hari Ini -->
                     <div
-                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
                         <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-yellow-100 text-yellow-600 mr-2">
-                                <i class="fas fa-calendar-day text-lg"></i>
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-3">
+                                <i class="fas fa-calendar-day text-xl"></i>
                             </div>
-                            <h2 class="text-sm font-semibold text-gray-800">Laporan Hari Ini</h2>
+                            <h2 class="text-base font-semibold text-gray-800">Laporan Hari Ini</h2>
                         </div>
-                        <p class="mt-2 text-2xl font-bold text-yellow-600">{{ $amountReportToday }}</p>
+                        <p class="mt-3 text-3xl font-bold text-yellow-600">{{ $amountReportToday }}</p>
                     </div>
 
-                    <!-- Card: Jumlah Komplain -->
+                    <!-- Card: Komplain Baru -->
                     <div
-                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
                         <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-red-100 text-red-600 mr-2">
-                                <i class="fas fa-exclamation-triangle text-lg"></i>
+                            <div class="p-3 rounded-full bg-red-100 text-red-600 mr-3">
+                                <i class="fas fa-comment-dots text-xl"></i>
                             </div>
-                            <h2 class="text-sm font-semibold text-gray-800">Jumlah Komplain</h2>
+                            <h2 class="text-base font-semibold text-gray-800">Komplain Baru</h2>
                         </div>
-                        <p class="mt-2 text-2xl font-bold text-red-600">{{ $totalComplaints }}</p>
+                        <p class="mt-3 text-3xl font-bold text-red-600">{{ $totalNewComplaints }}</p>
+                    </div>
+
+                    <!-- Card: Total Komplain -->
+                    <div
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-teal-100 text-teal-600 mr-3">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </div>
+                            <h2 class="text-base font-semibold text-gray-800">Total Complain</h2>
+                        </div>
+                        <p class="mt-3 text-3xl font-bold text-teal-600">{{ $totalComplaints }}</p>
                     </div>
 
                     <!-- Card: Petugas Lapor Hari Ini -->
                     <div
-                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
                         <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-indigo-100 text-indigo-600 mr-2">
-                                <i class="fas fa-user-check text-lg"></i>
+                            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-3">
+                                <i class="fas fa-user-check text-xl"></i>
                             </div>
-                            <h2 class="text-sm font-semibold text-gray-800">Petugas Lapor Hari Ini</h2>
+                            <h2 class="text-base font-semibold text-gray-800">Petugas Lapor Hari Ini</h2>
                         </div>
-                        <p class="mt-2 text-2xl font-bold text-indigo-600">{{ $countUsersWithReportToday }}</p>
+                        <p class="mt-3 text-3xl font-bold text-indigo-600">{{ $countUsersWithReportToday }}</p>
                     </div>
 
                     <!-- Card: Petugas Belum Lapor Hari Ini -->
                     <div
-                        class="bg-white shadow-md rounded-lg p-4 border border-gray-100 hover:shadow-xl transition duration-300">
+                        class="bg-white shadow-md rounded-lg p-5 border border-gray-100 hover:shadow-xl transition duration-300">
                         <div class="flex items-center">
-                            <div class="p-2 rounded-full bg-gray-100 text-gray-600 mr-2">
-                                <i class="fas fa-user-times text-lg"></i>
+                            <div class="p-3 rounded-full bg-gray-100 text-gray-600 mr-3">
+                                <i class="fas fa-user-times text-xl"></i>
                             </div>
-                            <h2 class="text-sm font-semibold text-gray-800">Belum Lapor Hari Ini</h2>
+                            <h2 class="text-base font-semibold text-gray-800">Belum Lapor Hari Ini</h2>
                         </div>
-                        <p class="mt-2 text-2xl font-bold text-gray-600">{{ $countUsersWithoutReportToday }}</p>
+                        <p class="mt-3 text-3xl font-bold text-gray-600">{{ $countUsersWithoutReportToday }}</p>
                     </div>
+
                 </section>
             </div>
 

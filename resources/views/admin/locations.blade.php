@@ -196,6 +196,11 @@
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                     <i class="fa-solid fa-comments w-5 mr-3"></i>
                     <span class="font-semibold">Lihat Pengaduan</span>
+                    <!-- Badge untuk totalNewComplaints -->
+                    <span
+                        class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                        {{ $totalNewComplaints }}
+                    </span>
                 </a>
                 <a href="{{ route('user') }}"
                     class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('user') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">

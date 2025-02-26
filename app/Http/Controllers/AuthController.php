@@ -84,6 +84,7 @@ class AuthController extends Controller
 
         // Hitung jumlah komplain
         $totalComplaints = Complaint::count();
+        $totalNewComplaints = Complaint::where('status', 'pending')->count();
 
         // Ambil semua user dengan role juru-bengkel atau petugas-kebersihan
         $usersToCheck = User::whereIn('role', ['juru-bengkel', 'petugas-kebersihan'])->get();
@@ -119,6 +120,7 @@ class AuthController extends Controller
             'totalReports',
             'amountReportToday',
             'totalComplaints',
+            'totalNewComplaints',
             'countUsersWithReportToday',
             'countUsersWithoutReportToday',
             'shouldChangePassword'

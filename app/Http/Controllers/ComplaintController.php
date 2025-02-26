@@ -207,6 +207,7 @@ class ComplaintController extends Controller
             $complaint->location    = $request->input('location');
             $complaint->complaint   = $request->input('complaint');
             $complaint->image       = json_encode($imagePaths); // Simpan dalam format JSON jika multiple
+            $complaint->status      = 'pending';
             $complaint->save();
 
             return redirect()->back()->with('success', 'Berhasil mengirim complaint.');
@@ -255,7 +256,8 @@ class ComplaintController extends Controller
     // reviewer and admin
     public function complaint()
     {
-        return view('reviewer.complaint');
+        $totalNewComplaints = Complaint::where('status', 'pending')->count();
+        return view('reviewer.complaint', compact('totalNewComplaints'));
     }
 
     public function getComplaint(Request $request)
@@ -265,6 +267,28 @@ class ComplaintController extends Controller
 
         return DataTables::of($reports)
             ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
+            ->editColumn('status', function ($row) {
+                $statuses = [
+                    'pending'      => 'pending',
+                    'noted'        => 'noted',
+                    'followed-up'  => 'followed-up'
+                ];
+                $dropdown = '<select class="complaint-status-dropdown border p-1 rounded" data-id="' . $row->id . '">';
+                foreach ($statuses as $value => $label) {
+                    $selected = $row->status === $value ? 'selected' : '';
+                    $style = '';
+                    if ($value === 'pending') {
+                        $style = 'color: #FBBF24;';
+                    } elseif ($value === 'noted') {
+                        $style = 'color: #3B82F6;';
+                    } elseif ($value === 'followed-up') {
+                        $style = 'color: #4ADE80;';
+                    }
+                    $dropdown .= "<option value='{$value}' style='{$style}' {$selected}>{$label}</option>";
+                }
+                $dropdown .= '</select>';
+                return $dropdown;
+            })
             ->editColumn('created_at', function ($row) {
                 return Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
             })
@@ -283,7 +307,33 @@ class ComplaintController extends Controller
                 return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
             })
 
-            ->rawColumns(['action'])
+            ->rawColumns(['status', 'action'])
             ->make(true);
+    }
+
+    // Method untuk meng-update status complaint via AJAX
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'id'     => 'required|exists:complaints,id',
+            'status' => 'required|in:pending,noted,followed-up'
+        ]);
+
+        $complaint = Complaint::find($request->id);
+        $complaint->status = $request->status;
+        $complaint->save();
+
+        return response()->json(['success' => true, 'message' => 'Complaint status updated successfully.']);
+    }
+
+    // Method untuk mengubah semua complaint yang statusnya pending menjadi noted
+    public function markAllNoted(Request $request)
+    {
+        $updated = Complaint::where('status', 'pending')->update(['status' => 'noted']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All pending complaints have been marked as noted. Total updated: ' . $updated
+        ]);
     }
 }

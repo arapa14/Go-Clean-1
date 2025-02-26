@@ -45,6 +45,8 @@ Route::middleware(['auth', 'isReviewerOrAdmin'])->group(function() {
 
     Route::get('/complaint', [ComplaintController::class, 'complaint'])->name('complaint');
     Route::get('/getComplaint', [ComplaintController::class, 'getComplaint'])->name('getComplaint');
+    Route::post('/update-complaint', [ComplaintController::class, 'updateStatus'])->name('updateComplaint');
+    Route::post('/mark-all-noted', [ComplaintController::class, 'markAllNoted'])->name('markAllNoted');
 });
 
 Route::middleware(['auth', 'isAdmin'])->group(function () {

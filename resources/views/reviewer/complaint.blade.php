@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pengaduan</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Font Awesome CSS -->
@@ -152,6 +153,11 @@
                             class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                             <i class="fa-solid fa-comments w-5 mr-3"></i>
                             <span class="font-semibold">Lihat Pengaduan</span>
+                            <!-- Badge untuk totalNewComplaints -->
+                            <span
+                                class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                {{ \App\Models\Complaint::where('status', 'pending')->count() }}
+                            </span>
                         </a>
                     @elseif(Auth::user()->role == 'admin')
                         <!-- Menu untuk Admin: semua menu -->
@@ -169,6 +175,11 @@
                             class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                             <i class="fa-solid fa-comments w-5 mr-3"></i>
                             <span class="font-semibold">Lihat Pengaduan</span>
+                            <!-- Badge untuk totalNewComplaints -->
+                            <span
+                                class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                {{ \App\Models\Complaint::where('status', 'pending')->count() }}
+                            </span>
                         </a>
                         <a href="{{ route('user') }}"
                             class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('user') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
@@ -217,19 +228,26 @@
 
             <!-- DataTable Container -->
             <div class="bg-white shadow-lg rounded-lg p-4 sm:p-6">
+                <div class="mb-4">
+                    <button id="mark-all-noted-btn"
+                        class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
+                        Mark All as Noted
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
-                    <table id="reports-table" class="min-w-full divide-y divide-gray-200">
+                    <table id="complaints-table" class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr>
                                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">No</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Nama</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Pengaduan</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Deskripsi</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Lokasi</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Waktu</th>
-                                <th class="px-4 py-2 text-center text-sm font-semibold text-gray-700">Aksi</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Name</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Description</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Location</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Date</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Status</th>
+                                <th class="px-4 py-2 text-center text-sm font-semibold text-gray-700">Action</th>
                             </tr>
                         </thead>
+                        <!-- Body akan diisi oleh DataTables -->
                     </table>
                 </div>
             </div>
@@ -240,14 +258,30 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
+        // Setup CSRF token untuk AJAX
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        // Fungsi untuk update warna teks pada dropdown status
+        function updateSelectColor(selectElem) {
+            var value = $(selectElem).val();
+            var colorMapping = {
+                'pending': '#FBBF24',
+                'noted': '#3B82F6',
+                'followed-up': '#4ADE80'
+            };
+            $(selectElem).css('color', colorMapping[value]);
+        }
+
         $(document).ready(function() {
-            // Inisialisasi DataTable
-            var table = $('#reports-table').DataTable({
+            var table = $('#complaints-table').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('getComplaint') }}',
                 columns: [{
-                        data: 'DT_RowIndex', // Mengambil nomor urut dari addIndexColumn()
+                        data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
@@ -255,10 +289,6 @@
                     {
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'complaint',
-                        name: 'complaint'
                     },
                     {
                         data: 'description',
@@ -273,27 +303,105 @@
                         name: 'created_at'
                     },
                     {
+                        data: 'status',
+                        name: 'status',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
                         searchable: false
                     }
                 ],
+                autoWidth: false,
                 responsive: true,
                 language: {
                     processing: '<i class="fas fa-spinner fa-spin"></i> Loading...'
                 },
                 order: [
                     [3, 'desc']
-                ]
+                ],
+                drawCallback: function() {
+                    $('.complaint-status-dropdown').each(function() {
+                        updateSelectColor(this);
+                    });
+                }
             });
-        });
 
-        // Setup CSRF token untuk AJAX
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            // Update dropdown status complaint via AJAX
+            $(document).on('change', '.complaint-status-dropdown', function() {
+                updateSelectColor(this);
+                var selectElem = $(this);
+                var complaintId = selectElem.data('id');
+                var newStatus = selectElem.val();
+
+                $.ajax({
+                    url: '{{ route('updateComplaint') }}',
+                    type: 'POST',
+                    data: {
+                        id: complaintId,
+                        status: newStatus
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        table.ajax.reload(null, false);
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed!',
+                            text: 'Error updating status.'
+                        });
+                        table.ajax.reload(null, false);
+                    }
+                });
+            });
+
+            // Handler tombol "Mark All as Noted"
+            $(document).on('click', '#mark-all-noted-btn', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Confirm Mark All as Noted',
+                    text: 'Are you sure you want to mark all pending complaints as noted?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, mark all',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#3B82F6'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '{{ route('markAllNoted') }}',
+                            type: 'POST',
+                            data: {},
+                            success: function(response) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#3B82F6'
+                                });
+                                table.ajax.reload(null, false);
+                            },
+                            error: function(xhr) {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Error marking all as noted.',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
         });
 
         // Handler untuk mobile sidebar

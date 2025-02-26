@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Complaint;
 use App\Models\Report;
 use App\Models\Setting;
 use Carbon\Carbon;
@@ -326,7 +327,8 @@ class ReportController extends Controller
     public function status()
     {
         // Tampilkan halaman status laporan di view petugas.status
-        return view('reviewer.status');
+        $totalNewComplaints = Complaint::where('status', 'pending')->count();
+        return view('reviewer.status', compact('totalNewComplaints'));
     }
 
     public function getStatus(Request $request)

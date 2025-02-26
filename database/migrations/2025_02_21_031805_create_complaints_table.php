@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('location');
             $table->string('image');
+            $table->enum('status', ['pending', 'noted', 'followed-up'])->default('pending');
             $table->timestamps();
         });
     }

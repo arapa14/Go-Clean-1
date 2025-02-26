@@ -223,6 +223,7 @@
                                 <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Deskripsi</th>
                                 <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Lokasi</th>
                                 <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Tanggal</th>
+                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
                                 <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Aksi</th>
                             </tr>
                         </thead>
@@ -264,6 +265,10 @@
                     {
                         data: 'created_at',
                         name: 'created_at'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
                     },
                     {
                         data: 'action',

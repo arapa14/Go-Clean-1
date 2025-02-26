@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Complaint;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ class UserController extends Controller
     // Tampilkan halaman manajemen user
     public function index()
     {
-        return view('admin.users');
+        $totalNewComplaints = Complaint::where('status', 'pending')->count();
+        return view('admin.users', compact('totalNewComplaints'));
     }
 
     // Mengembalikan data user untuk DataTables
