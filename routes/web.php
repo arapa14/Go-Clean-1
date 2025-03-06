@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
@@ -19,6 +20,17 @@ Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard'
 Route::get('/server-time', [AuthController::class, 'getServerTime']);
 Route::get('/switch/{id}', [UserController::class, 'switchAccount'])->name('switchAccount');
 Route::get('/switch-back', [UserController::class, 'switchBack'])->name('switchBack');
+
+
+// Tampilkan halaman form lupa password
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+// Proses pengiriman link reset password ke email
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+// Tampilkan halaman reset password (diakses melalui link email)
+Route::get('/reset-password/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+// Proses update password
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
+
 
 Route::middleware('auth')->group(function () {
     // Route untuk update password jika default

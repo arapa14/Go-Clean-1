@@ -68,6 +68,12 @@
                             Login
                         </button>
                     </div>
+                    <!-- Tambahkan link lupa password -->
+                    <div class="text-center mt-4">
+                        <a href="{{ route('password.request') }}" class="text-blue-600 hover:underline">
+                            Lupa Password?
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -113,7 +119,7 @@
                 });
                 const data = await response.json();
 
-                
+
 
                 if (response.ok && data.success) {
                     window.location.href = data.redirect_url || '/dashboard';
