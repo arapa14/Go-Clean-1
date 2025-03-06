@@ -45,8 +45,14 @@ class ForgotPasswordController extends Controller
         // Buat link reset password (dengan token dan email sebagai query parameter)
         $resetLink = url('/reset-password/' . $token . '?email=' . urlencode($request->email));
 
+        // Ambil data user berdasarkan email
+        $user = User::where('email', $request->email)->first();
+
         // Kirim email menggunakan Mailtrap (email view akan dibuat di langkah selanjutnya)
-        Mail::send('emails.forgot-password', ['resetLink' => $resetLink], function ($message) use ($request) {
+        Mail::send('emails.forgot-password', [
+            'resetLink' => $resetLink,
+            'user'      => $user
+        ], function ($message) use ($request) {
             $message->to($request->email);
             $message->subject('Reset Password');
         });

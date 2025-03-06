@@ -34,11 +34,19 @@
             display: inline-block;
             margin: 20px 0;
             padding: 12px 25px;
-            background-color: #007bff;
+            background-color: #1D4ED8;
+            /* sama dengan bg-blue-700 */
             color: #fff;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 0.375rem;
+            /* sama dengan rounded-md */
             font-weight: bold;
+            transition: background-color 300ms;
+        }
+
+        .btn:hover {
+            background-color: #1E40AF;
+            /* sama dengan hover:bg-blue-800 */
         }
 
         .footer {
@@ -52,12 +60,14 @@
 <body>
     <div class="container">
         <h2>Reset Password</h2>
-        <p>Hai,</p>
+        <p>Hai, {{ $user->name }}!</p>
         <p>Kami menerima permintaan untuk mereset password akun Anda. Jika Anda menginginkan perubahan password, silakan
             klik tombol di bawah ini:</p>
-        <p>
-            <a href="{{ $resetLink }}" class="btn">Reset Password</a>
-        </p>
+        <a href="{{ $resetLink }}"
+            style="display: inline-block; margin: 20px 0; padding: 12px 25px; background-color: #1D4ED8; color: #fff; text-decoration: none; border-radius: 0.375rem; font-weight: bold; transition: background-color 300ms;">
+            Reset Password
+        </a>
+
         <p>Jika tombol di atas tidak berfungsi, Anda juga dapat menyalin dan menempelkan tautan berikut ke browser Anda:
         </p>
         <p><a href="{{ $resetLink }}">{{ $resetLink }}</a></p>
