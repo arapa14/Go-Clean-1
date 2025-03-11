@@ -256,6 +256,7 @@
                                         {{ $report->session }}
                                     </span>
                                 </p>
+                                
                                 <p class="text-gray-700 mt-2">
                                     {{ $report->description }}
                                 </p>
@@ -349,7 +350,7 @@
 
             const input = document.createElement('input');
             input.setAttribute('type', 'file');
-            input.setAttribute('name', 'image[]');
+            input.setAttribute('name', 'images[]');
             input.setAttribute('id', `image-${imageCount}`);
             input.setAttribute('accept', 'image/*');
             input.setAttribute('capture', 'environment');

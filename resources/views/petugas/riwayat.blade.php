@@ -127,6 +127,24 @@
         </div>
     </div>
 
+    <!-- Modal Detail Gambar -->
+    <div id="imagesModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50 hidden"
+        onclick="closeImagesModalOnOverlay(event)">
+        <div class="bg-white p-4 rounded-lg max-w-3xl w-full mx-4 relative max-h-screen overflow-y-auto">
+            <!-- Tombol Close (selalu terlihat di pojok kanan atas) -->
+            <button onclick="closeImagesModal()" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 z-10">
+                <i class="fa-solid fa-xmark fa-2x"></i>
+            </button>
+            <div class="mb-4">
+                <h2 class="text-xl font-semibold text-center">Detail Gambar</h2>
+            </div>
+            <div id="modalImagesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Thumbnail gambar akan dimuat di sini -->
+            </div>
+        </div>
+    </div>
+
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- DataTables JS -->
@@ -181,6 +199,56 @@
             });
         });
     </script>
+
+    <script>
+        // Fungsi untuk membuka modal dan memuat gambar-gambar
+        function openImagesModal(imagesJson) {
+            const images = JSON.parse(imagesJson);
+            const container = document.getElementById('modalImagesContainer');
+            container.innerHTML = ''; // Bersihkan kontainer
+
+            images.forEach(function(image) {
+                const imageUrl = '{{ asset('storage') }}/' + image;
+                const imageDiv = document.createElement('div');
+                imageDiv.classList.add('flex', 'flex-col', 'items-center', 'gap-2', 'border', 'p-2', 'rounded',
+                    'shadow-sm');
+
+                const imgEl = document.createElement('img');
+                imgEl.src = imageUrl;
+                imgEl.alt = "Report Image";
+                imgEl.classList.add('object-contain', 'w-full', 'h-48');
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = imageUrl;
+                downloadLink.download = '';
+                downloadLink.classList.add('action-icon', 'btn-download', 'p-2', 'rounded-full');
+                downloadLink.title = "Download Gambar";
+                downloadLink.innerHTML = '<i class="fa-solid fa-download"></i>';
+
+                imageDiv.appendChild(imgEl);
+                imageDiv.appendChild(downloadLink);
+                container.appendChild(imageDiv);
+            });
+
+            // Tampilkan modal
+            document.getElementById('imagesModal').classList.remove('hidden');
+        }
+
+        // Fungsi untuk menutup modal
+        function closeImagesModal() {
+            document.getElementById('imagesModal').classList.add('hidden');
+        }
+
+        // Jika klik di luar konten modal (overlay), maka tutup modal
+        function closeImagesModalOnOverlay(event) {
+            // Pastikan hanya ketika yang diklik adalah overlay (bukan konten modal)
+            if (event.target.id === 'imagesModal') {
+                closeImagesModal();
+            }
+        }
+    </script>
+
+
 </body>
 
 </html>

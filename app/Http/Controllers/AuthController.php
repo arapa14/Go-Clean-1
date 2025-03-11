@@ -126,6 +126,8 @@ class AuthController extends Controller
             'shouldChangePassword'
         );
 
+        
+
         // Data yang umum untuk semua role
         $data = compact('user', 'locations', 'reports', 'reportToday', 'amountReportToday', 'shouldChangePassword');
 

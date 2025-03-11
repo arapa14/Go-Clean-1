@@ -21,8 +21,10 @@ class ReportController extends Controller
         $manager = new ImageManager(new Driver);
 
         // 2. Tentukan nama file & path penyimpanan
-        $imageName = time() . "_{$imageNamePrefix}." . $imageFile->getClientOriginalExtension();
-        $imagePath = storage_path("app/public/{$directory}/{$imageName}");
+        $uniqueId  = uniqid();
+        $extension = $imageFile->getClientOriginalExtension();
+        $imageName = $imageNamePrefix . '_' . time() . '_' . $uniqueId . '.' . $extension;
+        $imagePath = storage_path("app/public/{$directory}/{$imageName}");;
 
         // 3. Baca gambar dengan Intervention Image
         $image = $manager->read($imageFile->getRealPath());
@@ -226,7 +228,7 @@ class ReportController extends Controller
         // **Validasi Input**
         $request->validate([
             'images'      => 'required|array|min:1', // Pastikan ada minimal 1 gambar
-            'images.*'    => 'file|mimes:jpg,png', // Maksimum 2MB per file
+            'images.*'    => 'file|mimes:jpg,png', // 
             'description' => 'required|string|max:255',
             'location'    => 'required|string|not_in:Pilih lokasi',
         ]);
@@ -291,35 +293,28 @@ class ReportController extends Controller
         $reports = Report::where('user_id', $userId)->orderBy('created_at', 'desc');
 
         return DataTables::of($reports)
-            ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
+            ->addIndexColumn()
             ->editColumn('status', function ($row) {
                 if ($row->status === 'approved') {
                     return '<span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs font-semibold uppercase">Approved</span>';
                 } elseif ($row->status === 'rejected') {
                     return '<span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-semibold uppercase">Rejected</span>';
-                } else { // pending
+                } else {
                     return '<span class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs font-semibold uppercase">Pending</span>';
                 }
             })
             ->addColumn('action', function ($row) {
-                // Decode JSON untuk mendapatkan array gambar
                 $images = json_decode($row->image, true);
-                // Ambil gambar pertama, jika ada
-                $firstImage = !empty($images) ? $images[0] : '';
-
-                // Icon untuk melihat gambar
-                $viewIcon = '<a href="' . asset('storage/' . $firstImage) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
-                           <i class="fa-solid fa-eye"></i>
-                         </a>';
-                // Icon untuk mendownload gambar
-                $downloadIcon = '<a href="' . asset('storage/' . $firstImage) . '" download class="action-icon btn-download" title="Download Gambar">
-                               <i class="fa-solid fa-download"></i>
-                             </a>';
-                return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
+                $imagesJson = htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8');
+                $button = '<button class="action-icon btn-view p-2" onclick="openImagesModal(\'' . $imagesJson . '\')" title="Lihat Semua Gambar">
+                            <i class="fa-solid fa-images"></i>
+                       </button>';
+                return '<div class="flex justify-center">' . $button . '</div>';
             })
             ->rawColumns(['status', 'action'])
             ->make(true);
     }
+
 
 
     // reviewer and admin

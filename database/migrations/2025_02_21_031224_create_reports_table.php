@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('date');
             $table->enum('session', ['pagi', 'siang', 'sore', 'invalid']);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->string('image')->nullable();
+            $table->text('image')->nullable();
             $table->timestamps();
         });
     }
