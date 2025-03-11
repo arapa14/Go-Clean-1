@@ -362,18 +362,12 @@ class ReportController extends Controller
                 return Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
             })
             ->addColumn('action', function ($row) {
-                // Decode JSON untuk mendapatkan array gambar
                 $images = json_decode($row->image, true);
-                // Ambil gambar pertama, jika ada
-                $firstImage = !empty($images) ? $images[0] : '';
-
-                $viewIcon = '<a href="' . asset('storage/' . $firstImage) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
-                            <i class="fa-solid fa-eye"></i>
-                         </a>';
-                $downloadIcon = '<a href="' . asset('storage/' . $firstImage) . '" download class="action-icon btn-download" title="Download Gambar">
-                                <i class="fa-solid fa-download"></i>
-                             </a>';
-                return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
+                $imagesJson = htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8');
+                $button = '<button class="action-icon btn-view p-2" onclick="openImagesModal(\'' . $imagesJson . '\')" title="Lihat Semua Gambar">
+                            <i class="fa-solid fa-images"></i>
+                       </button>';
+                return '<div class="flex justify-center">' . $button . '</div>';
             })
             ->rawColumns(['status', 'action'])
             ->make(true);

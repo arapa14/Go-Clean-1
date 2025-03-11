@@ -20,8 +20,10 @@ class ComplaintController extends Controller
         $manager = new ImageManager(new Driver);
 
         // 2. Tentukan nama file & path penyimpanan
-        $imageName = time() . "_{$imageNamePrefix}." . $imageFile->getClientOriginalExtension();
-        $imagePath = storage_path("app/public/{$directory}/{$imageName}");
+        $uniqueId  = uniqid();
+        $extension = $imageFile->getClientOriginalExtension();
+        $imageName = $imageNamePrefix . '_' . time() . '_' . $uniqueId . '.' . $extension;
+        $imagePath = storage_path("app/public/{$directory}/{$imageName}");;
 
         // 3. Baca gambar dengan Intervention Image
         $image = $manager->read($imageFile->getRealPath());
@@ -226,20 +228,12 @@ class ComplaintController extends Controller
             return datatables()->of($complaints)
                 ->addIndexColumn() // Menambahkan nomor urut (DT_RowIndex)
                 ->addColumn('action', function ($row) {
-                    // Decode JSON untuk mendapatkan array gambar
                     $images = json_decode($row->image, true);
-                    // Ambil gambar pertama, jika ada
-                    $firstImage = !empty($images) ? $images[0] : '';
-
-                    // Icon untuk melihat gambar
-                    $viewIcon = '<a href="' . asset('storage/' . $firstImage) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
-                           <i class="fa-solid fa-eye"></i>
-                         </a>';
-                    // Icon untuk mendownload gambar
-                    $downloadIcon = '<a href="' . asset('storage/' . $firstImage) . '" download class="action-icon btn-download" title="Download Gambar">
-                               <i class="fa-solid fa-download"></i>
-                             </a>';
-                    return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
+                    $imagesJson = htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8');
+                    $button = '<button class="action-icon btn-view p-2" onclick="openImagesModal(\'' . $imagesJson . '\')" title="Lihat Semua Gambar">
+                                <i class="fa-solid fa-images"></i>
+                           </button>';
+                    return '<div class="flex justify-center">' . $button . '</div>';
                 })
                 ->editColumn('created_at', function ($complaint) {
                     return $complaint->created_at->format('Y-m-d H:i:s');
@@ -293,20 +287,13 @@ class ComplaintController extends Controller
                 return Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
             })
             ->addColumn('action', function ($row) {
-                // Decode JSON untuk mendapatkan array gambar
                 $images = json_decode($row->image, true);
-                // Ambil gambar pertama, jika ada
-                $firstImage = !empty($images) ? $images[0] : '';
-
-                $viewIcon = '<a href="' . asset('storage/' . $firstImage) . '" target="_blank" class="action-icon btn-view" title="Lihat Gambar">
-                                <i class="fa-solid fa-eye"></i>
-                             </a>';
-                $downloadIcon = '<a href="' . asset('storage/' . $firstImage) . '" download class="action-icon btn-download" title="Download Gambar">
-                                    <i class="fa-solid fa-download"></i>
-                                 </a>';
-                return '<div class="flex justify-center gap-2">' . $viewIcon . $downloadIcon . '</div>';
+                $imagesJson = htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8');
+                $button = '<button class="action-icon btn-view p-2" onclick="openImagesModal(\'' . $imagesJson . '\')" title="Lihat Semua Gambar">
+                            <i class="fa-solid fa-images"></i>
+                       </button>';
+                return '<div class="flex justify-center">' . $button . '</div>';
             })
-
             ->rawColumns(['status', 'action'])
             ->make(true);
     }
