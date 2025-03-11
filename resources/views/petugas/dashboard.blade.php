@@ -169,15 +169,29 @@
             <form action="{{ route('laporan.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <!-- Input Upload Gambar -->
-                <div id="image-container">
-                    <label for="image-1" class="image-label">
-                        <input type="file" name="images[]" id="image-1" accept="image/*" capture="environment"
-                            class="image-input" onchange="previewImage(event, 1)">
-                        <img id="preview-1" class="image-preview hidden">
-                    </label>
+                <div id="image-upload-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="image-1"
+                            class="block border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 transition-all duration-300 p-4 flex flex-col items-center justify-center cursor-pointer"
+                            aria-label="Unggah gambar" role="button">
+                            <input type="file" name="images[]" id="image-1" accept="image/*" capture="environment"
+                                class="hidden" onchange="previewImage(event, 'preview-1')">
+                            <div id="default-image-1" class="flex flex-col items-center">
+                                <i class="fas fa-camera text-3xl text-gray-500"></i>
+                                <p class="mt-2 text-gray-600 text-center">Klik atau tap untuk mengambil gambar / pilih
+                                    file</p>
+                            </div>
+                            <img id="preview-1" src="#" alt="Preview Gambar"
+                                class="mt-2 hidden object-cover w-full h-48 rounded-md transition-all duration-300 ease-in-out">
+                        </label>
+                    </div>
                 </div>
 
-                <button type="button" onclick="addImageInput()">+</button>
+                <!-- Tombol untuk menambah input gambar tambahan -->
+                <button type="button" onclick="addImageUpload()"
+                    class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300">
+                    Tambah Gambar
+                </button>
 
                 {{-- Input Lokasi --}}
                 <div class="mt-4">
@@ -256,7 +270,7 @@
                                         {{ $report->session }}
                                     </span>
                                 </p>
-                                
+
                                 <p class="text-gray-700 mt-2">
                                     {{ $report->description }}
                                 </p>
@@ -289,6 +303,7 @@
     <!-- End Container -->
 
     <script>
+        // Fungsi updateClock untuk mengambil dan menampilkan waktu server secara real-time
         function updateClock() {
             fetch('/server-time')
                 .then(response => response.json())
@@ -322,7 +337,7 @@
         updateClock();
         setInterval(updateClock, 30000);
 
-        // Hapus notifikasi setelah 5 detik
+        // Hapus notifikasi (error/success) setelah 5 detik
         setTimeout(function() {
             let errorMessage = document.getElementById('error-message');
             let successMessage = document.getElementById('success-message');
@@ -338,46 +353,49 @@
             }
         }, 5000);
 
-        let imageCount = 1;
-
-        function addImageInput() {
-            imageCount++;
-            const container = document.getElementById('image-container');
-
-            const label = document.createElement('label');
-            label.setAttribute('for', `image-${imageCount}`);
-            label.classList.add('image-label');
-
-            const input = document.createElement('input');
-            input.setAttribute('type', 'file');
-            input.setAttribute('name', 'images[]');
-            input.setAttribute('id', `image-${imageCount}`);
-            input.setAttribute('accept', 'image/*');
-            input.setAttribute('capture', 'environment');
-            input.classList.add('image-input');
-            input.setAttribute('onchange', `previewImage(event, ${imageCount})`);
-
-            const preview = document.createElement('img');
-            preview.setAttribute('id', `preview-${imageCount}`);
-            preview.classList.add('image-preview', 'hidden');
-
-            label.appendChild(input);
-            label.appendChild(preview);
-            container.appendChild(label);
-        }
-
-        function previewImage(event, index) {
-            const file = event.target.files[0];
-            const preview = document.getElementById(`preview-${index}`);
-
-            if (file) {
+        /**
+         * Fungsi previewImage()
+         * Menampilkan preview gambar saat pengguna memilih file.
+         * @param {Event} event - Event onchange dari input file.
+         * @param {string} previewId - ID elemen <img> untuk preview.
+         */
+        function previewImage(event, previewId) {
+            const input = event.target;
+            const preview = document.getElementById(previewId);
+            const defaultContent = input.parentElement.querySelector('div');
+            if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                     preview.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+                    // Sembunyikan konten default (ikon dan instruksi)
+                    defaultContent.classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        /**
+         * Fungsi addImageUpload()
+         * Menambahkan input gambar baru secara dinamis.
+         */
+        let imageUploadCount = 1;
+
+        function addImageUpload() {
+            imageUploadCount++;
+            const container = document.getElementById('image-upload-container');
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <label for="image-${imageUploadCount}" class="block border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 transition-all duration-300 p-4 flex flex-col items-center justify-center cursor-pointer" aria-label="Unggah gambar" role="button">
+                    <input type="file" name="images[]" id="image-${imageUploadCount}" accept="image/*" capture="environment" class="hidden" onchange="previewImage(event, 'preview-${imageUploadCount}')">
+                    <div id="default-image-${imageUploadCount}" class="flex flex-col items-center">
+                        <i class="fas fa-camera text-3xl text-gray-500"></i>
+                        <p class="mt-2 text-gray-600 text-center">Klik atau tap untuk mengambil gambar / pilih file</p>
+                    </div>
+                    <img id="preview-${imageUploadCount}" src="#" alt="Preview Gambar" class="mt-2 hidden object-cover w-full h-48 rounded-md transition-all duration-300 ease-in-out">
+                </label>
+            `;
+            container.appendChild(div);
         }
     </script>
 
