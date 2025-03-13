@@ -120,6 +120,24 @@
         #loadingOverlay.hidden {
             display: none !important;
         }
+
+        /* Style untuk tombol hapus preview (silang) */
+        .remove-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
     </style>
 </head>
 
@@ -173,17 +191,20 @@
                 <div id="image-upload-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
                         <label for="image-1"
-                            class="block border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 transition-all duration-300 p-4 flex flex-col items-center justify-center cursor-pointer"
+                            class="relative border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 transition-all duration-300 p-4 flex flex-col items-center justify-center cursor-pointer"
                             aria-label="Unggah gambar" role="button">
                             <input type="file" name="images[]" id="image-1" accept="image/*" capture="environment"
                                 class="hidden" onchange="previewImage(event, 'preview-1')">
                             <div id="default-image-1" class="flex flex-col items-center">
                                 <i class="fas fa-camera text-3xl text-gray-500"></i>
-                                <p class="mt-2 text-gray-600 text-center">Klik atau tap untuk mengambil gambar / pilih
-                                    file</p>
+                                <p class="mt-2 text-gray-600 text-center">Klik atau tap untuk mengambil gambar</p>
                             </div>
                             <img id="preview-1" src="#" alt="Preview Gambar"
                                 class="mt-2 hidden object-cover w-full h-48 rounded-md transition-all duration-300 ease-in-out">
+                            <!-- Tombol hapus preview -->
+                            <button type="button" class="remove-preview hidden"
+                                onclick="removePreview(event, 'image-1', 'preview-1', 'default-image-1')"><i
+                                    class="fa fa-times"></i></button>
                         </label>
                     </div>
                 </div>
@@ -409,12 +430,35 @@
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                     preview.classList.remove('hidden');
-                    // Sembunyikan konten default (ikon dan instruksi)
                     defaultContent.classList.add('hidden');
+                    // Tampilkan tombol hapus preview
+                    const removeBtn = input.parentElement.querySelector('.remove-preview');
+                    if (removeBtn) {
+                        removeBtn.classList.remove('hidden');
+                    }
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        /**
+         * Fungsi removePreview()
+         * Menghapus preview gambar dan mereset input file.
+         * @param {Event} event - Event klik pada tombol remove.
+         * @param {string} inputId - ID input file.
+         * @param {string} previewId - ID elemen preview image.
+         * @param {string} defaultId - ID elemen default (ikon & instruksi).
+         */
+        function removePreview(event, inputId, previewId, defaultId) {
+            event.stopPropagation();
+            event.preventDefault();
+            // Cari elemen terdekat yang membungkus label upload
+            const uploadWrapper = event.currentTarget.closest('div');
+            if (uploadWrapper) {
+                uploadWrapper.remove();
+            }
+        }
+
 
         /**
          * Fungsi addImageUpload()
@@ -427,15 +471,16 @@
             const container = document.getElementById('image-upload-container');
             const div = document.createElement('div');
             div.innerHTML = `
-                <label for="image-${imageUploadCount}" class="block border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 transition-all duration-300 p-4 flex flex-col items-center justify-center cursor-pointer" aria-label="Unggah gambar" role="button">
-                    <input type="file" name="images[]" id="image-${imageUploadCount}" accept="image/*" capture="environment" class="hidden" onchange="previewImage(event, 'preview-${imageUploadCount}')">
-                    <div id="default-image-${imageUploadCount}" class="flex flex-col items-center">
-                        <i class="fas fa-camera text-3xl text-gray-500"></i>
-                        <p class="mt-2 text-gray-600 text-center">Klik atau tap untuk mengambil gambar / pilih file</p>
-                    </div>
-                    <img id="preview-${imageUploadCount}" src="#" alt="Preview Gambar" class="mt-2 hidden object-cover w-full h-48 rounded-md transition-all duration-300 ease-in-out">
-                </label>
-            `;
+    <label for="image-${imageUploadCount}" class="relative block border-2 border-dashed border-gray-300 rounded-md hover:border-blue-500 transition-all duration-300 p-4 flex flex-col items-center justify-center cursor-pointer" aria-label="Unggah gambar" role="button">
+      <input type="file" name="images[]" id="image-${imageUploadCount}" accept="image/*" capture="environment" class="hidden" onchange="previewImage(event, 'preview-${imageUploadCount}')">
+      <div id="default-image-${imageUploadCount}" class="flex flex-col items-center">
+        <i class="fas fa-camera text-3xl text-gray-500"></i>
+        <p class="mt-2 text-gray-600 text-center">Klik atau tap untuk mengambil gambar</p>
+      </div>
+      <img id="preview-${imageUploadCount}" src="#" alt="Preview Gambar" class="mt-2 hidden object-cover w-full h-48 rounded-md transition-all duration-300 ease-in-out">
+      <button type="button" class="remove-preview hidden" onclick="removePreview(event, 'image-${imageUploadCount}', 'preview-${imageUploadCount}', 'default-image-${imageUploadCount}')"><i class="fa fa-times"></i></button>
+    </label>
+  `;
             container.appendChild(div);
         }
     </script>
