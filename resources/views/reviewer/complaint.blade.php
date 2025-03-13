@@ -90,7 +90,7 @@
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <header class="bg-white shadow-md p-4 sm:hidden flex justify-between items-center">
-        <h1 class="text-xl font-bold text-blue-600">Dashboard</h1>
+        <h1 class="text-xl font-bold text-blue-600">Pengaduan</h1>
         <!-- Tombol hamburger yang juga mencakup badge -->
         <button id="mobile-menu-button" class="relative text-blue-600 focus:outline-none">
             <i class="fa-solid fa-bars fa-2x"></i>
