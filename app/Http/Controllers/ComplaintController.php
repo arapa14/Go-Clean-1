@@ -170,8 +170,8 @@ class ComplaintController extends Controller
 
         // Validasi input dari form
         $request->validate([
-            'image'      => 'required|array',
-            'image.*'    => 'file|mimes:jpg,png|max:4096',
+            'images'      => 'required|array',
+            'images.*'    => 'file|mimes:jpg,png|max:4096',
             'complaint'  => 'required|string',
             'description' => 'required|string|max:255',
             'location'   => 'required|string|not_in:Pilih lokasi',
@@ -196,7 +196,7 @@ class ComplaintController extends Controller
         $fontPath = public_path('arial.ttf');
 
         $imagePaths = [];
-        foreach ($request->file('image') as $imageFile) {
+        foreach ($request->file('images') as $imageFile) {
             $imagePaths[] = $this->processImage($imageFile, $imageNamePrefix, $directory, $watermarkText, $fontPath);
         }
 
