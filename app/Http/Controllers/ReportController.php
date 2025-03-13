@@ -323,7 +323,8 @@ class ReportController extends Controller
     {
         // Tampilkan halaman status laporan di view petugas.status
         $totalNewComplaints = Complaint::where('status', 'pending')->count();
-        return view('reviewer.status', compact('totalNewComplaints'));
+        $totalPendingReports = Report::where('status', 'pending')->count();
+        return view('reviewer.status', compact('totalNewComplaints', 'totalPendingReports'));
     }
 
     public function getStatus(Request $request)

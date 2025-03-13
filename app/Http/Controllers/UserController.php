@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Complaint;
+use App\Models\Report;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -17,7 +18,8 @@ class UserController extends Controller
     public function index()
     {
         $totalNewComplaints = Complaint::where('status', 'pending')->count();
-        return view('admin.users', compact('totalNewComplaints'));
+        $totalPendingReports = Report::where('status', 'pending')->count();
+        return view('admin.users', compact('totalNewComplaints', 'totalPendingReports'));
     }
 
     // Mengembalikan data user untuk DataTables

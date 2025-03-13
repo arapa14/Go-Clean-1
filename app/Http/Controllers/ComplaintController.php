@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Complaint;
+use App\Models\Report;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -251,7 +252,8 @@ class ComplaintController extends Controller
     public function complaint()
     {
         $totalNewComplaints = Complaint::where('status', 'pending')->count();
-        return view('reviewer.complaint', compact('totalNewComplaints'));
+        $totalPendingReports = Report::where('status', 'pending')->count();
+        return view('reviewer.complaint', compact('totalNewComplaints', 'totalPendingReports'));
     }
 
     public function getComplaint(Request $request)

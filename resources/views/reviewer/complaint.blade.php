@@ -89,11 +89,17 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Mobile Header -->
     <header class="bg-white shadow-md p-4 sm:hidden flex justify-between items-center">
-        <h1 class="text-xl font-bold text-blue-600">Pengaduan</h1>
-        <button id="mobile-menu-button" class="text-blue-600 focus:outline-none">
+        <h1 class="text-xl font-bold text-blue-600">Dashboard</h1>
+        <!-- Tombol hamburger yang juga mencakup badge -->
+        <button id="mobile-menu-button" class="relative text-blue-600 focus:outline-none">
             <i class="fa-solid fa-bars fa-2x"></i>
+            @if ($totalPendingReports + $totalNewComplaints > 0)
+                <span
+                    class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                    {{ $totalPendingReports + $totalNewComplaints }}
+                </span>
+            @endif
         </button>
     </header>
 
@@ -148,6 +154,11 @@
                             class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('status') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                             <i class="fa-solid fa-file-alt w-5 mr-3"></i>
                             <span class="font-semibold">Lihat Laporan</span>
+                            <!-- Badge untuk jumlah laporan pending -->
+                            <span
+                                class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                {{ $totalPendingReports }}
+                            </span>
                         </a>
                         <a href="{{ route('complaint') }}"
                             class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
@@ -170,6 +181,11 @@
                             class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('status') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
                             <i class="fa-solid fa-file-alt w-5 mr-3"></i>
                             <span class="font-semibold">Lihat Laporan</span>
+                            <!-- Badge untuk jumlah laporan pending -->
+                            <span
+                                class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                {{ $totalPendingReports }}
+                            </span>
                         </a>
                         <a href="{{ route('complaint') }}"
                             class="flex items-center p-2 rounded transition-colors {{ request()->routeIs('complaint') ? 'bg-blue-700 text-white' : 'hover:bg-blue-700' }}">
@@ -259,7 +275,8 @@
         onclick="closeImagesModalOnOverlay(event)">
         <div class="bg-white p-4 rounded-lg max-w-3xl w-full mx-4 relative max-h-screen overflow-y-auto">
             <!-- Tombol Close (selalu terlihat di pojok kanan atas) -->
-            <button onclick="closeImagesModal()" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 z-10">
+            <button onclick="closeImagesModal()"
+                class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 z-10">
                 <i class="fa-solid fa-xmark fa-2x"></i>
             </button>
             <div class="mb-4">
@@ -518,7 +535,7 @@
                 closeImagesModal();
             }
         }
-    </script>    
+    </script>
 </body>
 
 </html>

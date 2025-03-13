@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Complaint;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Setting; // Asumsikan Anda punya model Setting
@@ -18,7 +19,8 @@ class SettingController extends Controller
         $logo = Setting::where('key', 'logo')->first()->value;
         $settings = Setting::pluck('value', 'key')->toArray();
         $totalNewComplaints = Complaint::where('status', 'pending')->count();
-        return view('admin.settings', compact(['settings', 'logo', 'totalNewComplaints']));
+        $totalPendingReports = Report::where('status', 'pending')->count();
+        return view('admin.settings', compact(['settings', 'logo', 'totalNewComplaints', 'totalPendingReports']));
     }
 
     /**

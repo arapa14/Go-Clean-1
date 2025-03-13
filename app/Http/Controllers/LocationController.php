@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Complaint;
 use App\Models\Location;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -13,7 +14,8 @@ class LocationController extends Controller
     public function index()
     {
         $totalNewComplaints = Complaint::where('status', 'pending')->count();
-        return view('admin.locations', compact('totalNewComplaints'));
+        $totalPendingReports = Report::where('status', 'pending')->count();
+        return view('admin.locations', compact('totalNewComplaints', 'totalPendingReports'));
     }
 
     // Mengembalikan data location untuk DataTables

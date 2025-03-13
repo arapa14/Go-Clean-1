@@ -74,6 +74,7 @@ class AuthController extends Controller
 
         // Hitung jumalah laporan
         $totalReports = Report::count();
+        $totalPendingReports = Report::where('status', 'pending')->count();
 
         // Hitung jumlah upload hari ini
         $amountReportToday = Report::whereDate('created_at', $today)->count();
@@ -119,6 +120,7 @@ class AuthController extends Controller
             'petugasKebersihanCount',
             'totalReports',
             'amountReportToday',
+            'totalPendingReports',
             'totalComplaints',
             'totalNewComplaints',
             'countUsersWithReportToday',
@@ -126,7 +128,7 @@ class AuthController extends Controller
             'shouldChangePassword'
         );
 
-        
+
 
         // Data yang umum untuk semua role
         $data = compact('user', 'locations', 'reports', 'reportToday', 'amountReportToday', 'shouldChangePassword');
