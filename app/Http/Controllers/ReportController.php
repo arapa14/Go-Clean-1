@@ -272,10 +272,10 @@ class ReportController extends Controller
             $report->image       = json_encode($imagePaths); // Simpan array gambar sebagai JSON
             $report->save();
 
-            return redirect()->back()->with('success', 'Berhasil mengirim report.');
+            return redirect()->back()->with('success', 'Berhasil mengirim laporan.');
         } catch (\Exception $e) {
             \Log::error($e);
-            return redirect()->back()->with('error', 'Gagal mengirim report');
+            return redirect()->back()->with('error', 'Gagal mengirim laporan');
         }
     }
 

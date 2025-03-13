@@ -104,10 +104,31 @@
         .hidden {
             display: none;
         }
+
+        /* Loading Overlay Style */
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(243, 244, 246, 0.75);
+            /* bg-gray-50 dengan opacity 75% */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        #loadingOverlay.hidden {
+            display: none !important;
+        }
     </style>
 </head>
 
 <body class="bg-gray-100">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden">
+        <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+    </div>
+
     <!-- Wrapper container -->
     <div class="container mx-auto px-4 py-6">
         {{-- Header --}}
@@ -146,7 +167,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('complain.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="reportForm" action="{{ route('complain.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div id="image-upload-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -271,6 +292,11 @@
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script>
+        document.getElementById('reportForm').addEventListener('submit', function() {
+            // Tampilkan loading overlay
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        });
+
         $(document).ready(function() {
             $('#complaints-table').DataTable({
                 processing: true,
