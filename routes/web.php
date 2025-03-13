@@ -93,6 +93,11 @@ Route::get('/error-404', function () {
     abort(404, 'Halaman tidak ditemukan.');
 });
 
+// Error 405: Not Found
+Route::get('/error-405', function () {
+    abort(405, 'Metode tidak diizinkan.');
+});
+
 // Error 419: Page Expired
 Route::get('/error-419', function () {
     abort(419, 'Sesi telah kedaluwarsa.');
